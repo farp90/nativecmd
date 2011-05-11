@@ -1,0 +1,31 @@
+TARGETNAME=native
+TARGETTYPE=PROGRAM
+RELEASETYPE=CUSTOM
+TARGETPATH=$(ROOTDIR)\build\
+
+C_DEFINES=$(C_DEFINES) -D_KERNEL32_ -D_INLINE_NT_CURRENTTEB_H_
+
+!INCLUDE $(ROOTDIR)\sources.inc
+
+TARGETLIBS=$(TARGETLIBS)\
+	$(ROOTDIR)\lib\*\crt.lib\
+	$(ROOTDIR)\lib\*\kernel.lib\
+	$(ROOTDIR)\lib\*\mspack.lib\
+	$(ROOTDIR)\lib\laotouwim.lib
+
+
+PRECOMPILED_INCLUDE=precomp.h
+
+
+SOURCES=display.c  \
+        file.c     \
+        hardware.c \
+        input.c    \
+        main.c     \
+        sysinfo.c  \
+    keytrans.c \
+    shell.c    \
+    process.c  \
+    ntfile.c   \
+    ntreg.c
+
