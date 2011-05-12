@@ -34,6 +34,7 @@ IF NOT EXIST %DDKDIR%bin\setenv.bat (
 	GOTO :1
 )
 CALL :BUILD
+
 PAUSE >NUL
 GOTO :EOF
 
@@ -47,4 +48,7 @@ GOTO :EOF
 	IF NOT EXIST build MKDIR build
 
 	BUILD.EXE /b /Z /g /w /M %THREAD% /c /f /JPATH build /J build
+	RD /S /Q mspack\obj 1>NUL 2>NUL
+	RD /S /Q kernel32\obj 1>NUL 2>NUL
+	RD /S /Q shell\obj 1>NUL 2>NUL
 GOTO :EOF
