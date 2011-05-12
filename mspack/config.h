@@ -96,7 +96,7 @@
 //
 ///* Define to `unsigned int' if <sys/types.h> does not define. */
 //#undef size_t
-//#define MSPACK_NO_DEFAULT_SYSTEM
+#define MSPACK_NO_DEFAULT_SYSTEM
 #define inline __inline
 #pragma warning ( disable : 4242 )
 #pragma warning ( disable : 4090 )
