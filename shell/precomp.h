@@ -1,43 +1,55 @@
-/*++
+#ifndef __CMD_PRECOMP_H
+#define __CMD_PRECOMP_H
 
-Copyright (c) Alex Ionescu.  All rights reserved.
+#ifdef _MSC_VER
+#pragma warning ( disable : 4103 ) /* use #pragma pack to change alignment */
+#undef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE
+#endif//_MSC_VER
 
-    THIS CODE AND INFORMATION IS PROVIDED UNDER THE LESSER GNU PUBLIC LICENSE.
-    PLEASE READ THE FILE "COPYING" IN THE TOP LEVEL DIRECTORY.
-
-Module Name:
-
-    precomp.h
-
-Abstract:
-
-    The Native Command Line Interface (NCLI) is the command shell for the
-    TinyKRNL OS.
-
-Environment:
-
-    Native mode
-
-Revision History:
-
-    Alex Ionescu - Started Implementation - 23-Mar-06
-
---*/
+#include <stdlib.h>
+#include <malloc.h>
 #define WIN32_NO_STATUS
-#define NTOS_MODE_USER
+#include <windows.h>
+#include <winnt.h>
+#include <shellapi.h>
+
+#include <tchar.h>
+#include <direct.h>
+
+#include <ctype.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <excpt.h>
-#include <windows.h>
-#include <windef.h>
-#include <winnt.h>
+#include <math.h>
+#include <time.h>
+#include <assert.h>
+
+#define NTOS_MODE_USER
 #include <ntndk.h>
 #include <ntddkbd.h>
+#include <debug.h>
 
+#if DBG
+#define DEBUG_CHANNEL(ch) static ULONG gDebugChannel = ch;
+#else
+#define DEBUG_CHANNEL(ch)
+#endif
+
+DEBUG_CHANNEL(401);
+
+#define TRACE(fmt, ...)         TRACE__(gDebugChannel, fmt, ##__VA_ARGS__)
+#define WARN(fmt, ...)          WARN__(gDebugChannel, fmt, ##__VA_ARGS__)
+#endif /* __CMD_PRECOMP_H */
+
+
+#define BUFFER_SIZE 4096
+
+#define CMDLINE_LENGTH  8192
+
+/* 16k = max buffer size */
+#define BUFF_SIZE 16384
 /* display.c */
-BOOLEAN ECHO_STATUS = 1;
-BOOLEAN ERROR_STATUS = 1;
-
 VOID DisplayString (char* buffer);
 VOID Printf (char* fmt, ...);
 VOID Print (char* buffer);
@@ -49,12 +61,9 @@ VOID ErrorPrint (char* buffer);
 VOID BufferPrintf (char* fmt, ...);
 VOID BufferPrint (char* buffer);
 VOID BufferPutChar(WCHAR pChar);
-/*/ display.c */
+/* input.c */
+CHAR GetChar(VOID);
+PCHAR ReadLine(VOID);
 
-
-typedef struct _COMMAND
-{
-	LPTSTR name;
-	INT    flags;
-	INT    (*func)(LPTSTR);
-} COMMAND, *LPCOMMAND;
+/* prompt.c */
+VOID PrintPrompt(VOID);

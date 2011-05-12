@@ -20,4 +20,6 @@ SOURCES=\
 	display.c  \
         input.c    \
         main.c     \
+	keytrans.c \
+	prompt.c   \
 

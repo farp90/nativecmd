@@ -1,4 +1,6 @@
 #include "precomp.h"
+BOOLEAN EchoStatus = TRUE;
+BOOLEAN ErrorStatus = TRUE;
 WCHAR ScreenBuffer[81];
 VOID DisplayString (char* buffer)
 {
@@ -18,7 +20,7 @@ VOID Printf (char* fmt, ...)
    va_list ap;
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ECHO_STATUS){
+   if(EchoStatus){
        va_start(ap, fmt);
        vsprintf(buffer, fmt, ap);
        va_end(ap);
@@ -36,7 +38,7 @@ VOID Print (char* buffer)
 {
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ECHO_STATUS){
+   if(EchoStatus){
        RtlInitAnsiString (&AnsiString, buffer);
        RtlAnsiStringToUnicodeString (&UnicodeString,
                      &AnsiString,
@@ -51,7 +53,7 @@ VOID PutChar(WCHAR pChar)
 {
     WCHAR _PutChar[2] = L" ";
     UNICODE_STRING CharString = {2, 2, _PutChar};
-    if(ECHO_STATUS){
+    if(EchoStatus){
         CharString.Buffer[0] = pChar;
         NtDisplayString(&CharString);
     }
@@ -63,7 +65,7 @@ VOID ErrorPrintf (char* fmt, ...)
    va_list ap;
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ERROR_STATUS){
+   if(ErrorStatus){
        va_start(ap, fmt);
        vsprintf(buffer, fmt, ap);
        va_end(ap);
@@ -81,7 +83,7 @@ VOID ErrorPrint (char* buffer)
 {
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ERROR_STATUS){
+   if(ErrorStatus){
        RtlInitAnsiString (&AnsiString, buffer);
        RtlAnsiStringToUnicodeString (&UnicodeString,
                      &AnsiString,
@@ -111,7 +113,7 @@ VOID BufferPrintf (char* fmt, ...)
    va_list ap;
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ECHO_STATUS){
+   if(EchoStatus){
        va_start(ap, fmt);
        vsprintf(buffer, fmt, ap);
        va_end(ap);
@@ -130,7 +132,7 @@ VOID BufferPrint (char* buffer)
 {
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
-   if(ECHO_STATUS)
+   if(EchoStatus)
    {
        RtlInitAnsiString (&AnsiString, buffer);
        RtlAnsiStringToUnicodeString (&UnicodeString,
@@ -155,9 +157,9 @@ VOID BufferPutChar(WCHAR pChar)
         RtlInitUnicodeString (&CharString, ScreenBuffer);
         NtDisplayString(&CharString);
     }
-    else if(pChar == '\r' || pChar == '\n' ||)
+    else if(pChar == '\r' || pChar == '\n')
     {
-        CharString[0] = 0;
+        ScreenBuffer[0] = 0;
     }
     else
     {
