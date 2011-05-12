@@ -1,5 +1,6 @@
 DIRS=\
 	kernel32\
-	mspack\
-	shell
+#	mspack\
+#	shell\
+  cmd
 

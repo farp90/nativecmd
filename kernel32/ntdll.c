@@ -34,16 +34,6 @@ DecodeSystemPointer(
     return RtlDecodeSystemPointer(Pointer);
 }
 
-
-VOID
-WINAPI
-DeleteCriticalSection (
-    LPCRITICAL_SECTION CriticalSection
-)
-{
-    RtlDeleteCriticalSection(CriticalSection);
-}
-
 __out_opt
 PVOID
 WINAPI
@@ -63,7 +53,16 @@ EncodeSystemPointer(
 {
     return RtlEncodeSystemPointer(Pointer);
 }
+#endif
 
+VOID
+WINAPI
+DeleteCriticalSection (
+    LPCRITICAL_SECTION CriticalSection
+)
+{
+    RtlDeleteCriticalSection(CriticalSection);
+}
 VOID
 WINAPI
 EnterCriticalSection(
@@ -72,7 +71,7 @@ EnterCriticalSection(
 {
     RtlEnterCriticalSection(CriticalSection);
 }
-#endif
+
 __bcount(dwBytes)
 LPVOID
 WINAPI
@@ -137,7 +136,7 @@ HeapSize(
     );
 }
 
-#if 0
+
 VOID
 WINAPI
 LeaveCriticalSection(LPCRITICAL_SECTION CriticalSection)
@@ -157,7 +156,7 @@ TryEnterCriticalSection(
         CriticalSection
     );
 }
-
+#if 0
 __out_opt
 PVOID
 WINAPI

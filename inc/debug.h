@@ -82,18 +82,12 @@ RtlAssert(
 #if DBG
 
     /* These are always printed */
-    #define DPRINT1(fmt, ...) do { \
-        if (DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__))  \
-            DbgPrint("(%s:%d) DbgPrint() failed!\n", __FILE__, __LINE__); \
-    } while (0)
+    #define DPRINT1(fmt, ...) DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
     /* These are printed only if NDEBUG is NOT defined */
     #ifndef NDEBUG
 
-        #define DPRINT(fmt, ...) do { \
-            if (DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__))  \
-                DbgPrint("(%s:%d) DbgPrint() failed!\n", __FILE__, __LINE__); \
-        } while (0)
+        #define DPRINT(fmt, ...) DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
     #else
 

@@ -152,7 +152,7 @@ EXPORTS
   ;DefineDosDeviceW 
   ;DelayLoadFailureHook 
   DeleteAtom 
-  ;DeleteCriticalSection 
+  DeleteCriticalSection 
   DeleteFiber 
   DeleteFileA 
   DeleteFileW 
@@ -175,7 +175,7 @@ EXPORTS
   ;EncodeSystemPointer 
   EndUpdateResourceA 
   EndUpdateResourceW 
-  ;EnterCriticalSection 
+  EnterCriticalSection 
   EnumCalendarInfoA 
   EnumCalendarInfoExA 
   EnumCalendarInfoExW 
@@ -625,7 +625,7 @@ EXPORTS
   LZRead 
   LZSeek 
   LZStart 
-  ;LeaveCriticalSection 
+  LeaveCriticalSection 
   LoadLibraryA 
   LoadLibraryExA 
   LoadLibraryExW 
@@ -917,7 +917,7 @@ EXPORTS
   TransactNamedPipe 
   ;TransmitCommChar 
   ;TrimVirtualBuffer 
-  ;TryEnterCriticalSection 
+  TryEnterCriticalSection 
   TzSpecificLocalTimeToSystemTime 
   ;UTRegister 
   ;UTUnRegister 

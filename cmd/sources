@@ -1,0 +1,85 @@
+TARGETNAME=cmd
+TARGETTYPE=PROGRAM
+RELEASETYPE=CUSTOM
+TARGETPATH=$(ROOTDIR)\build
+
+C_DEFINES=$(C_DEFINES) -D_INLINE_NT_CURRENTTEB_H_
+
+USE_LIBCNTPR=1
+
+!INCLUDE $(ROOTDIR)\sources.inc
+
+TARGETLIBS=$(TARGETLIBS)\
+#  $(SDK_LIB_PATH)\BufferOverflow.lib \
+	$(ROOTDIR)\lib\*\kernel.lib\
+
+
+SOURCES=alias.c \
+	assoc.c \
+	attrib.c \
+	batch.c \
+	beep.c \
+	call.c \
+	chcp.c \
+	choice.c \
+	cls.c \
+	cmd.c \
+	cmddbg.c \
+	cmdinput.c \
+	cmdtable.c \
+	color.c \
+	console.c \
+	copy.c \
+	date.c \
+	del.c \
+	delay.c \
+	dir.c \
+	dirstack.c \
+	echo.c \
+	error.c \
+	filecomp.c \
+	for.c \
+	free.c \
+	goto.c \
+	history.c \
+	if.c \
+	internal.c \
+	label.c \
+	locale.c \
+	main.c \
+	memory.c \
+	misc.c \
+	mklink.c \
+	move.c \
+	msgbox.c \
+	parser.c \
+	path.c \
+	pause.c \
+	prompt.c \
+	redir.c \
+	ren.c \
+	replace.c \
+	screen.c \
+	set.c \
+	setlocal.c \
+	shift.c \
+	start.c \
+	strtoclr.c \
+	time.c \
+	timer.c \
+	title.c \
+	type.c \
+	ver.c \
+	verify.c \
+	vol.c \
+	where.c \
+	window.c \
+#	crt.c\
+	print.c\
+	cmd.rc\
+	chdir.c\
+	input.c\
+	keytrans.c\
+	getdcwd.c\
+	getdrive.c\
+	getcwd.c

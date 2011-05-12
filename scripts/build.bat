@@ -51,4 +51,5 @@ GOTO :EOF
 	RD /S /Q mspack\obj 1>NUL 2>NUL
 	RD /S /Q kernel32\obj 1>NUL 2>NUL
 	RD /S /Q shell\obj 1>NUL 2>NUL
+	RD /S /Q cmd\obj 1>NUL 2>NUL
 GOTO :EOF
