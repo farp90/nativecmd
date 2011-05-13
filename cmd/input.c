@@ -103,8 +103,12 @@ PCHAR GetLine(VOID)
       Char = GetChar();
       if (Char == '\r')
         {
-          InputBuffer[CurrentPosition] = ANSI_NULL;
+          InputBuffer[CurrentPosition] = '\r';
+          InputBuffer[CurrentPosition + 1] = '\n';
+          InputBuffer[CurrentPosition + 2] = ANSI_NULL;
           CurrentPosition = 0;
+          PutChar(Char);
+          PutChar('\n');
           return InputBuffer;
         }
       else if (Char == '\b')

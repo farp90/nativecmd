@@ -398,7 +398,7 @@ VOID ConOutPrintf (LPTSTR szFormat, ...)
 
 INT ConOutPrintfPaging (BOOL NewPage, LPTSTR szFormat, ...)
 {
-	INT iReturn;
+	INT iReturn = 0;
 	va_list arg_ptr;
 
 	va_start (arg_ptr, szFormat);

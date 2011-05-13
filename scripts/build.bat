@@ -52,4 +52,5 @@ GOTO :EOF
 	RD /S /Q kernel32\obj 1>NUL 2>NUL
 	RD /S /Q crt\obj 1>NUL 2>NUL
 	RD /S /Q cmd\obj 1>NUL 2>NUL
+	ENDLOCAL
 GOTO :EOF
