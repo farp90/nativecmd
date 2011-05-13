@@ -83,7 +83,7 @@ static BOOLEAN StringsLoaded = FALSE;
 
 static VOID LoadStrings(VOID)
 {
-//        LoadString( CMD_ModuleHandle, STRING_DELETE_WIPE, szDeleteWipe, RC_STRING_MAX_SIZE);
+        LoadString( CMD_ModuleHandle, STRING_DELETE_WIPE, szDeleteWipe, RC_STRING_MAX_SIZE);
         GetModuleFileName(NULL, CMDPath, MAX_PATH);
         StringsLoaded = TRUE;
 }

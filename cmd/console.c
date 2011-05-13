@@ -245,31 +245,32 @@ VOID ConPrintf(LPTSTR szFormat, va_list arg_ptr, DWORD nStdHandle)
 
 INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHandle)
 {
-//	INT len;
+	INT len;
 //	CONSOLE_SCREEN_BUFFER_INFO csbi;
-//	TCHAR szOut[OUTPUT_BUFFER_SIZE];
-//	DWORD dwWritten;
+	TCHAR szOut[OUTPUT_BUFFER_SIZE];
+	TCHAR Buffer[MAX_PATH];
+	DWORD dwWritten;
 //	HANDLE hOutput = GetStdHandle(nStdHandle);
-//
-//	/* used to count number of lines since last pause */
-//	static int LineCount = 0;
-//
-//	/* used to see how big the screen is */
-//	int ScreenLines = 0;
-//
-//	/* chars since start of line */
-//	int CharSL;
-//
-//	int from = 0, i = 0;
-//
-//	if(NewPage == TRUE)
-//		LineCount = 0;
-//
-//	/* rest LineCount and return if no string have been given */
-//	if (szFormat == NULL)
-//		return 0;
-//
-//
+
+	/* used to count number of lines since last pause */
+	static int LineCount = 0;
+
+	/* used to see how big the screen is */
+	int ScreenLines = 20;
+	int ScreenRows = 40;
+	/* chars since start of line */
+	int CharSL;
+
+	int from = 0, i = 0;
+
+	if(NewPage == TRUE)
+		LineCount = 0;
+
+	/* rest LineCount and return if no string have been given */
+	if (szFormat == NULL)
+		return 0;
+
+
 //	//get the size of the visual screen that can be printed too
 //	if (!GetConsoleScreenBufferInfo(hOutput, &csbi))
 //	{
@@ -287,35 +288,37 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 //		ConPrintf(szFormat, arg_ptr, nStdHandle);
 //		return 0;
 //	}
-//
-//	len = _vstprintf (szOut, szFormat, arg_ptr);
-//
-//	while (i < len)
-//	{
-//		// Search until the end of a line is reached
-//		if (szOut[i++] != _T('\n') && ++CharSL < csbi.dwSize.X)
-//			continue;
-//
-//		LineCount++;
-//		CharSL=0;
-//
-//		if(LineCount >= ScreenLines)
-//		{
-//			WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
-//			from = i;
-//
-//			if(PagePrompt() != PROMPT_YES)
-//			{
-//				return 1;
-//			}
-//			//reset the number of lines being printed
-//			LineCount = 0;
-//		}
-//	}
-//
-//	WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
-//
-//	return 0;
+
+	len = _vstprintf (szOut, szFormat, arg_ptr);
+
+	while (i < len)
+	{
+		// Search until the end of a line is reached
+		if (szOut[i++] != _T('\n') && ++CharSL < ScreenRows)
+			continue;
+
+		LineCount++;
+		CharSL=0;
+
+		if(LineCount >= ScreenLines)
+		{
+            _tcsncpy(Buffer, &szOut[from], i-from);
+			//WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
+            ConWrite(Buffer, (DWORD)(i-from), 0);
+			from = i;
+
+			if(PagePrompt() != PROMPT_YES)
+			{
+				return 1;
+			}
+			//reset the number of lines being printed
+			LineCount = 0;
+		}
+	}
+
+	//WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
+    ConWrite(&szOut[from], (DWORD)(i-from), 0);
+	return 0;
 }
 
 VOID ConErrFormatMessage (DWORD MessageId, ...)

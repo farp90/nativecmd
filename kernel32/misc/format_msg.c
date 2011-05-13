@@ -31,7 +31,7 @@ struct format_args
     int           last;
 };
 
-static const WCHAR kernel32W[] = {'k','e','r','n','e','l','3','2',0};
+//static const WCHAR kernel32W[] = {'k','e','r','n','e','l','3','2',0};
 
 /* Messages used by FormatMessage
  *
@@ -389,7 +389,7 @@ DWORD WINAPI FormatMessageA(
     DWORD	destlength;
     LPWSTR	from;
     DWORD	width = dwFlags & FORMAT_MESSAGE_MAX_WIDTH_MASK;
-    HMODULE kernel32_handle = GetModuleHandleW(kernel32W);
+    HMODULE kernel32_handle = GetModuleHandleW(NULL);
 
     TRACE("(0x%x,%p,%d,0x%x,%p,%d,%p)\n",
           dwFlags,lpSource,dwMessageId,dwLanguageId,lpBuffer,nSize,args);
@@ -496,7 +496,7 @@ DWORD WINAPI FormatMessageW(
     DWORD talloced;
     LPWSTR from;
     DWORD width = dwFlags & FORMAT_MESSAGE_MAX_WIDTH_MASK;
-    HMODULE kernel32_handle = GetModuleHandleW(kernel32W);
+    HMODULE kernel32_handle = GetModuleHandleW(NULL);
 
     TRACE("(0x%x,%p,%d,0x%x,%p,%d,%p)\n",
           dwFlags,lpSource,dwMessageId,dwLanguageId,lpBuffer,nSize,args);

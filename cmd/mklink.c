@@ -118,7 +118,7 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 INT
 cmd_mklink(LPTSTR param)
 {
-	HMODULE hKernel32 = GetModuleHandle(_T("KERNEL32"));
+	//HMODULE hKernel32 = GetModuleHandle(_T("KERNEL32"));
 	DWORD Flags = 0;
 	enum { SYMBOLIC, HARD, JUNCTION } LinkType = SYMBOLIC;
 	INT NumFiles = 0;
@@ -175,13 +175,13 @@ cmd_mklink(LPTSTR param)
 	{
 		/* CreateSymbolicLink doesn't exist in old versions of Windows,
 		 * so load dynamically */
-		BOOL (WINAPI *CreateSymbolicLink)(LPCTSTR, LPCTSTR, DWORD)
-#ifdef UNICODE
-			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkW");
-#else
-			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
-#endif
-		if (CreateSymbolicLink && CreateSymbolicLink(Name[0], Name[1], Flags))
+//		BOOL (WINAPI *CreateSymbolicLink)(LPCTSTR, LPCTSTR, DWORD)
+//#ifdef UNICODE
+//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkW");
+//#else
+//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
+//#endif
+		if (/*CreateSymbolicLink &&*/ CreateSymbolicLink(Name[0], Name[1], Flags))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_SYMBOLIC, Name[0], Name[1]);
 			return 0;
@@ -191,13 +191,13 @@ cmd_mklink(LPTSTR param)
 	{
 		/* CreateHardLink doesn't exist in old versions of Windows,
 		 * so load dynamically */
-		BOOL (WINAPI *CreateHardLink)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES)
-#ifdef UNICODE
-			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkW");
-#else
-			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkA");
-#endif
-		if (CreateHardLink && CreateHardLink(Name[0], Name[1], NULL))
+//		BOOL (WINAPI *CreateHardLink)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES)
+//#ifdef UNICODE
+//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkW");
+//#else
+//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkA");
+//#endif
+		if (/*CreateHardLink &&*/ CreateHardLink(Name[0], Name[1], NULL))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_HARD, Name[0], Name[1]);
 			return 0;

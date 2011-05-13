@@ -1192,9 +1192,8 @@ GetAppName:
 
     /* FIXME: Check if Machine Type and SubSys Version Match */
 
-    /* We don't support POSIX or anything else for now */
-    if (IMAGE_SUBSYSTEM_WINDOWS_GUI != SectionImageInfo.SubSystemType &&
-        IMAGE_SUBSYSTEM_WINDOWS_CUI != SectionImageInfo.SubSystemType)
+    /* We don't support Native or anything else for now */
+    if (IMAGE_SUBSYSTEM_NATIVE != SectionImageInfo.SubSystemType)
     {
         DPRINT1("Invalid subsystem %d\n", SectionImageInfo.SubSystemType);
         SetLastError(ERROR_BAD_EXE_FORMAT);
@@ -1420,7 +1419,7 @@ GetAppName:
 
     /* Duplicate the handles if needed */
     if (!bInheritHandles && !(StartupInfo.dwFlags & STARTF_USESTDHANDLES) &&
-        SectionImageInfo.SubSystemType == IMAGE_SUBSYSTEM_WINDOWS_CUI)
+        SectionImageInfo.SubSystemType == IMAGE_SUBSYSTEM_NATIVE)
     {
         PRTL_USER_PROCESS_PARAMETERS RemoteParameters;
 

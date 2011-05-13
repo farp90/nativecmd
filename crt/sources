@@ -1,0 +1,17 @@
+TARGETNAME=crt
+TARGETTYPE=LIBRARY
+RELEASETYPE=CUSTOM
+TARGETPATH=$(ROOTDIR)\lib
+
+!INCLUDE $(ROOTDIR)\sources.inc
+
+C_DEFINES=$(C_DEFINES) -D_INLINE_NT_CURRENTTEB_H_
+
+TARGETLIBS=$(TARGETLIBS)\
+	$(ROOTDIR)\lib\*\kernel.lib\
+
+SOURCES= \
+	chdir.c\
+	getcwd.c\
+	getdcwd.c\
+	getdrive.c

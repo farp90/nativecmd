@@ -591,17 +591,17 @@ PrintDirectoryHeader(LPTSTR szPath, LPDIRSWITCHFLAGS lpFlags)
   /* print drive info */
   if (szVolName[0] != _T('\0'))
     {
-//      LoadString(CMD_ModuleHandle, STRING_DIR_HELP2, szMsg, RC_STRING_MAX_SIZE);
+      LoadString(CMD_ModuleHandle, STRING_DIR_HELP2, szMsg, RC_STRING_MAX_SIZE);
       DirPrintf(lpFlags, szMsg, szRootName[0], szVolName);
     }
   else
     {
-//      LoadString(CMD_ModuleHandle, STRING_DIR_HELP3, szMsg, RC_STRING_MAX_SIZE);
+      LoadString(CMD_ModuleHandle, STRING_DIR_HELP3, szMsg, RC_STRING_MAX_SIZE);
       DirPrintf(lpFlags, szMsg, szRootName[0]);
     }
 
   /* print the volume serial number if the return was successful */
-//  LoadString(CMD_ModuleHandle, STRING_DIR_HELP4, (LPTSTR) szMsg, RC_STRING_MAX_SIZE);
+  LoadString(CMD_ModuleHandle, STRING_DIR_HELP4, (LPTSTR) szMsg, RC_STRING_MAX_SIZE);
   DirPrintf(lpFlags, szMsg, HIWORD(dwSerialNr), LOWORD(dwSerialNr));
 
   return TRUE;
@@ -699,7 +699,7 @@ GetUserDiskFreeSpace(LPCTSTR lpRoot,
 		     PULARGE_INTEGER lpFreeSpace)
 {
   PGETFREEDISKSPACEEX pGetFreeDiskSpaceEx;
-  HINSTANCE hInstance;
+//  HINSTANCE hInstance;
   DWORD dwSecPerCl;
   DWORD dwBytPerSec;
   DWORD dwFreeCl;
@@ -708,21 +708,21 @@ GetUserDiskFreeSpace(LPCTSTR lpRoot,
 
   lpFreeSpace->QuadPart = 0;
 
-  hInstance = GetModuleHandle(_T("KERNEL32"));
-  if (hInstance != NULL)
-    {
-      pGetFreeDiskSpaceEx = (PGETFREEDISKSPACEEX)GetProcAddress(hInstance,
-#ifdef _UNICODE
-					                        "GetDiskFreeSpaceExW");
-#else
-				                                "GetDiskFreeSpaceExA");
-#endif
-      if (pGetFreeDiskSpaceEx != NULL)
-	{
-	  if (pGetFreeDiskSpaceEx(lpRoot, lpFreeSpace, &TotalNumberOfBytes, &TotalNumberOfFreeBytes) == TRUE)
+//  hInstance = GetModuleHandle(_T("KERNEL32"));
+//  if (hInstance != NULL)
+//    {
+//      pGetFreeDiskSpaceEx = (PGETFREEDISKSPACEEX)GetProcAddress(hInstance,
+//#ifdef _UNICODE
+//					                        "GetDiskFreeSpaceExW");
+//#else
+//				                                "GetDiskFreeSpaceExA");
+//#endif
+//      if (pGetFreeDiskSpaceEx != NULL)
+//	{
+	  if (GetDiskFreeSpaceEx(lpRoot, lpFreeSpace, &TotalNumberOfBytes, &TotalNumberOfFreeBytes) == TRUE)
 	    return;
-	}
-    }
+//	}
+ //   }
 
   GetDiskFreeSpace(lpRoot,
 		   &dwSecPerCl,
@@ -772,7 +772,7 @@ PrintSummary(LPTSTR szPath,
    if (TotalSummary && lpFlags->bRecursive)
    {
       ConvertULargeInteger(u64Bytes, szBuffer, sizeof(szBuffer), lpFlags->bTSeperator);
-//      LoadString(CMD_ModuleHandle, STRING_DIR_HELP5, szMsg, RC_STRING_MAX_SIZE);
+      LoadString(CMD_ModuleHandle, STRING_DIR_HELP5, szMsg, RC_STRING_MAX_SIZE);
       DirPrintf(lpFlags, szMsg, ulFiles, szBuffer);
    }
    else
@@ -781,7 +781,7 @@ PrintSummary(LPTSTR szPath,
       /* Condition to print summary is:
       If we are not in bare format and if we have results! */
       ConvertULargeInteger(u64Bytes, szBuffer, 20, lpFlags->bTSeperator);
-//      LoadString(CMD_ModuleHandle, STRING_DIR_HELP8, szMsg, RC_STRING_MAX_SIZE);
+      LoadString(CMD_ModuleHandle, STRING_DIR_HELP8, szMsg, RC_STRING_MAX_SIZE);
       DirPrintf(lpFlags, szMsg, ulFiles, szBuffer);
    }
 
@@ -790,7 +790,7 @@ PrintSummary(LPTSTR szPath,
 	{
 		GetUserDiskFreeSpace(szPath, &uliFree);
 		ConvertULargeInteger(uliFree.QuadPart, szBuffer, sizeof(szBuffer), lpFlags->bTSeperator);
-//		LoadString(CMD_ModuleHandle, STRING_DIR_HELP6, (LPTSTR) szMsg, RC_STRING_MAX_SIZE);
+		LoadString(CMD_ModuleHandle, STRING_DIR_HELP6, (LPTSTR) szMsg, RC_STRING_MAX_SIZE);
 		DirPrintf(lpFlags, szMsg, ulDirs, szBuffer);
 	}
 
@@ -1113,7 +1113,7 @@ DirPrintFiles(LPWIN32_FIND_DATA ptrFiles[],	/* [IN] Files' Info */
 	   and if we are in recursive mode... we must have results */
 	if (!(lpFlags->bBareFormat ) && !((lpFlags->bRecursive) && (dwCount <= 0)))
 	{
-//		LoadString(CMD_ModuleHandle, STRING_DIR_HELP7, szMsg, RC_STRING_MAX_SIZE);
+		LoadString(CMD_ModuleHandle, STRING_DIR_HELP7, szMsg, RC_STRING_MAX_SIZE);
 		if (DirPrintf(lpFlags, szMsg, szTemp))
 			return;
 	}

@@ -147,7 +147,7 @@ BasepInitConsole(VOID)
 
     /* We have nothing to do if this isn't a console app... */
     if (RtlImageNtHeader(GetModuleHandle(NULL))->OptionalHeader.Subsystem !=
-        IMAGE_SUBSYSTEM_WINDOWS_CUI)
+        IMAGE_SUBSYSTEM_NATIVE)
     {
         DPRINT("Image is not a console application\n");
         Parameters->ConsoleHandle = NULL;
@@ -267,7 +267,7 @@ DllMain(HANDLE hDll,
 
     DPRINT("DllMain(hInst %lx, dwReason %lu)\n",
            hDll, dwReason);
-#if 0
+#if 1
 #ifndef NDENUG
     __asm
     {

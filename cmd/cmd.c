@@ -147,9 +147,9 @@
 #define NT_SUCCESS(StatCode)  ((NTSTATUS)(StatCode) >= 0)
 #endif
 
-typedef NTSTATUS (WINAPI *NtQueryInformationProcessProc)(HANDLE, PROCESSINFOCLASS,
-                                                          PVOID, ULONG, PULONG);
-typedef NTSTATUS (WINAPI *NtReadVirtualMemoryProc)(HANDLE, PVOID, PVOID, ULONG, PULONG);
+//typedef NTSTATUS (WINAPI *NtQueryInformationProcessProc)(HANDLE, PROCESSINFOCLASS,
+//                                                          PVOID, ULONG, PULONG);
+//typedef NTSTATUS (WINAPI *NtReadVirtualMemoryProc)(HANDLE, PVOID, PVOID, ULONG, PULONG);
 
 BOOL bExit = FALSE;       /* indicates EXIT was typed */
 BOOL bCanExit = TRUE;     /* indicates if this shell is exitable */
@@ -167,8 +167,8 @@ HANDLE hOut;
 LPTSTR lpOriginalEnvironment;
 HANDLE CMD_ModuleHandle;
 
-static NtQueryInformationProcessProc NtQueryInformationProcessPtr = NULL;
-static NtReadVirtualMemoryProc       NtReadVirtualMemoryPtr = NULL;
+//static NtQueryInformationProcessProc NtQueryInformationProcess = NULL;
+//static NtReadVirtualMemoryProc       NtReadVirtualMemory = NULL;
 
 #ifdef INCLUDE_CMD_COLOR
 WORD wDefColor;           /* default color */
@@ -222,12 +222,12 @@ static BOOL IsConsoleProcess(HANDLE Process)
 	PEB ProcessPeb;
 	ULONG BytesRead;
 
-	if (NULL == NtQueryInformationProcessPtr || NULL == NtReadVirtualMemoryPtr)
-	{
-		return TRUE;
-	}
+//	if (NULL == NtQueryInformationProcess || NULL == NtReadVirtualMemory)
+//	{
+//		return TRUE;
+//	}
 
-	Status = NtQueryInformationProcessPtr (
+	Status = NtQueryInformationProcess (
 		Process, ProcessBasicInformation,
 		&Info, sizeof(PROCESS_BASIC_INFORMATION), NULL);
 	if (! NT_SUCCESS(Status))
@@ -235,7 +235,7 @@ static BOOL IsConsoleProcess(HANDLE Process)
 		WARN ("NtQueryInformationProcess failed with status %08x\n", Status);
 		return TRUE;
 	}
-	Status = NtReadVirtualMemoryPtr (
+	Status = NtReadVirtualMemory (
 		Process, Info.PebBaseAddress, &ProcessPeb,
 		sizeof(PEB), &BytesRead);
 	if (! NT_SUCCESS(Status) || sizeof(PEB) != BytesRead)
@@ -244,7 +244,7 @@ static BOOL IsConsoleProcess(HANDLE Process)
 		return TRUE;
 	}
 
-	return IMAGE_SUBSYSTEM_WINDOWS_CUI == ProcessPeb.ImageSubsystem;
+	return IMAGE_SUBSYSTEM_NATIVE == ProcessPeb.ImageSubsystem;
 }
 
 
@@ -1629,12 +1629,12 @@ Initialize()
 	/* Some people like to run ReactOS cmd.exe on Win98, it helps in the
 	 * build process. So don't link implicitly against ntdll.dll, load it
 	 * dynamically instead */
-	NtDllModule = GetModuleHandle(TEXT("ntdll.dll"));
-	if (NtDllModule != NULL)
-	{
-		NtQueryInformationProcessPtr = (NtQueryInformationProcessProc)GetProcAddress(NtDllModule, "NtQueryInformationProcess");
-		NtReadVirtualMemoryPtr = (NtReadVirtualMemoryProc)GetProcAddress(NtDllModule, "NtReadVirtualMemory");
-	}
+//	NtDllModule = GetModuleHandle(TEXT("ntdll.dll"));
+//	if (NtDllModule != NULL)
+//	{
+//		NtQueryInformationProcess = (NtQueryInformationProcessProc)GetProcAddress(NtDllModule, "NtQueryInformationProcess");
+//		NtReadVirtualMemory = (NtReadVirtualMemoryProc)GetProcAddress(NtDllModule, "NtReadVirtualMemory");
+//	}
 
 	InitLocale ();
 
@@ -1816,10 +1816,12 @@ int cmd_main (int argc, const TCHAR *argv[])
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
     DbgPrint("!!!Native Shell START............................................\n");
-//    __asm
-//    {
-//        int 3;
-//    }
+#if 1
+    __asm
+    {
+        int 3;
+    }
+#endif
 	InitializeCriticalSection(&ChildProcessRunningLock);
 	lpOriginalEnvironment = DuplicateEnvironment();
 

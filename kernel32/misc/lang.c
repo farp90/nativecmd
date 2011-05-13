@@ -1702,7 +1702,7 @@ GetLocaleInfoW (
     if (SUBLANGID(liLangID) == SUBLANG_NEUTRAL)
         liLangID = MAKELANGID(PRIMARYLANGID(liLangID), SUBLANG_DEFAULT);
 
-    hModule = GetModuleHandleW( L"kernel32.dll" );
+    hModule = GetModuleHandleW( NULL );
     if (!(hRsrc = FindResourceExW( hModule, (LPWSTR)RT_STRING, (LPCWSTR)((LCType >> 4) + 1), liLangID )))
     {
         SetLastError( ERROR_INVALID_FLAGS );
