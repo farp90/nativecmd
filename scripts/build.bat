@@ -50,6 +50,6 @@ GOTO :EOF
 	BUILD.EXE /b /Z /g /w /M %THREAD% /c /f /JPATH build /J build
 	RD /S /Q mspack\obj 1>NUL 2>NUL
 	RD /S /Q kernel32\obj 1>NUL 2>NUL
-	RD /S /Q shell\obj 1>NUL 2>NUL
+	RD /S /Q crt\obj 1>NUL 2>NUL
 	RD /S /Q cmd\obj 1>NUL 2>NUL
 GOTO :EOF

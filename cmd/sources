@@ -10,7 +10,7 @@ USE_LIBCNTPR=1
 !INCLUDE $(ROOTDIR)\sources.inc
 
 TARGETLIBS=$(TARGETLIBS)\
-#  $(SDK_LIB_PATH)\BufferOverflow.lib \
+	$(ROOTDIR)\lib\*\crt.lib\
 	$(ROOTDIR)\lib\*\kernel.lib\
 
 
@@ -77,9 +77,9 @@ SOURCES=alias.c \
 #	crt.c\
 	print.c\
 	cmd.rc\
-	chdir.c\
+#	chdir.c\
 	input.c\
 	keytrans.c\
-	getdcwd.c\
-	getdrive.c\
-	getcwd.c
+#	getdcwd.c\
+#	getdrive.c\
+#	getcwd.c
