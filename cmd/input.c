@@ -10,21 +10,21 @@ CHAR CurrentPosition = 0;
 
 NTSTATUS InitInputDevice(VOID)
 {
-  UNICODE_STRING Driver;
-  OBJECT_ATTRIBUTES ObjectAttributes;
-  IO_STATUS_BLOCK Iosb;
-  HANDLE hDriver;
-  NTSTATUS Status;
+    UNICODE_STRING Driver;
+    OBJECT_ATTRIBUTES ObjectAttributes;
+    IO_STATUS_BLOCK Iosb;
+    HANDLE hDriver;
+    NTSTATUS Status;
 
-  RtlInitUnicodeString(&Driver, L"\\Device\\KeyboardClass0");
+    RtlInitUnicodeString(&Driver, L"\\Device\\KeyboardClass0");
 
-  InitializeObjectAttributes(&ObjectAttributes,
+    InitializeObjectAttributes(&ObjectAttributes,
                              &Driver,
                              OBJ_CASE_INSENSITIVE,
                              NULL,
                              NULL);
 
-  Status = NtCreateFile(&hDriver,
+    Status = NtCreateFile(&hDriver,
                         SYNCHRONIZE | GENERIC_READ | FILE_READ_ATTRIBUTES,
                         &ObjectAttributes,
                         &Iosb,
@@ -36,25 +36,25 @@ NTSTATUS InitInputDevice(VOID)
                         NULL,
                         0);
 
-  InitializeObjectAttributes(&ObjectAttributes, NULL, 0, NULL, NULL);
-  Status = NtCreateEvent(&hEvent, EVENT_ALL_ACCESS, &ObjectAttributes, 1, 0);
+    InitializeObjectAttributes(&ObjectAttributes, NULL, 0, NULL, NULL);
+    Status = NtCreateEvent(&hEvent, EVENT_ALL_ACCESS, &ObjectAttributes, 1, 0);
 
-  hKeyboard = hDriver;
-  return Status;
+    hKeyboard = hDriver;
+    return Status;
 }
 
 NTSTATUS WaitForInput(IN HANDLE hDriver,
                       IN PVOID Buffer,
                       IN OUT PULONG BufferSize)
 {
-  IO_STATUS_BLOCK Iosb;
-  LARGE_INTEGER ByteOffset;
-  NTSTATUS Status;
+    IO_STATUS_BLOCK Iosb;
+    LARGE_INTEGER ByteOffset;
+    NTSTATUS Status;
 
-  RtlZeroMemory(&Iosb, sizeof(Iosb));
-  RtlZeroMemory(&ByteOffset, sizeof(ByteOffset));
+    RtlZeroMemory(&Iosb, sizeof(Iosb));
+    RtlZeroMemory(&ByteOffset, sizeof(ByteOffset));
 
-  Status = NtReadFile(hDriver,
+    Status = NtReadFile(hDriver,
                       hEvent,
                       NULL,
                       NULL,
@@ -64,44 +64,58 @@ NTSTATUS WaitForInput(IN HANDLE hDriver,
                       &ByteOffset,
                       NULL);
 
-  if (Status == STATUS_PENDING)
+    if (Status == STATUS_PENDING)
     {
-      Status = NtWaitForSingleObject(hEvent, TRUE, NULL);
+        Status = NtWaitForSingleObject(hEvent, TRUE, NULL);
     }
 
-  *BufferSize = (ULONG)Iosb.Information;
-  return Status;
+    *BufferSize = (ULONG)Iosb.Information;
+    return Status;
 }
 
 CHAR GetChar(VOID)
 {
-  KEYBOARD_INPUT_DATA KeyboardData;
-  KBD_RECORD kbd_rec;
-  ULONG BufferLength = sizeof(KEYBOARD_INPUT_DATA);
-  if(!hKeyboard)
+    KEYBOARD_INPUT_DATA KeyboardData;
+    KBD_RECORD kbd_rec;
+    ULONG BufferLength = sizeof(KEYBOARD_INPUT_DATA);
+    if(!hKeyboard)
     {
-      InitInputDevice();
+        InitInputDevice();
     }
-  WaitForInput(hKeyboard, &KeyboardData, &BufferLength);
-
-  IntTranslateKey(&KeyboardData, &kbd_rec);
-
-  if (!kbd_rec.bKeyDown)
+    do
     {
-      return (-1);
+        WaitForInput(hKeyboard, &KeyboardData, &BufferLength);
+        IntTranslateKey(&KeyboardData, &kbd_rec);
     }
-  return kbd_rec.AsciiChar;
+    while(KeyboardData.Flags & KEY_BREAK);
+    return kbd_rec.AsciiChar;
+}
+int GetScanCode(VOID)
+{
+    KEYBOARD_INPUT_DATA KeyboardData;
+    KBD_RECORD kbd_rec;
+    ULONG BufferLength = sizeof(KEYBOARD_INPUT_DATA);
+    if(!hKeyboard)
+    {
+        InitInputDevice();
+    }
+    do
+    {
+        WaitForInput(hKeyboard, &KeyboardData, &BufferLength);
+    }
+    while(KeyboardData.Flags & KEY_BREAK);
+    return KeyboardData.MakeCode;
 }
 
 PCHAR GetLine(VOID)
 {
-  CHAR Char;
-  BOOLEAN First = FALSE;
+    CHAR Char;
+    BOOLEAN First = FALSE;
 
-  while (TRUE)
+    while (TRUE)
     {
-      Char = GetChar();
-      if (Char == '\r')
+        Char = GetChar();
+        if (Char == '\r')
         {
           InputBuffer[CurrentPosition] = '\r';
           InputBuffer[CurrentPosition + 1] = '\n';
@@ -111,7 +125,7 @@ PCHAR GetLine(VOID)
           PutChar('\n');
           return InputBuffer;
         }
-      else if (Char == '\b')
+        else if (Char == '\b')
         {
           if (CurrentPosition)
             {
@@ -120,10 +134,10 @@ PCHAR GetLine(VOID)
             }
           continue;
         }
-      if (!Char || Char == -1) continue;
-      InputBuffer[CurrentPosition] = Char;
-      CurrentPosition++;
-      PutChar(Char);
+        if (!Char || Char == -1) continue;
+        InputBuffer[CurrentPosition] = Char;
+        CurrentPosition++;
+        PutChar(Char);
     }
 }
 

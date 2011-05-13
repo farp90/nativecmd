@@ -267,7 +267,7 @@ DllMain(HANDLE hDll,
 
     DPRINT("DllMain(hInst %lx, dwReason %lu)\n",
            hDll, dwReason);
-#if 1
+#if 0
 #ifndef NDENUG
     __asm
     {

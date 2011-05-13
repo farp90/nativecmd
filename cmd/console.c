@@ -163,7 +163,8 @@ static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
 
 //	if (WriteConsole(hOutput, str, len, &dwWritten, NULL))
 //		return;
-
+//    DPRINT1("nStdHandle:%X\n",nStdHandle);
+//    DPRINT1("nStdHandle:%X\n",*nStdHandle);
 	/* We're writing to a file or pipe instead of the console. Convert the
 	 * string from TCHARs to the desired output format, if the two differ */
 	if (bUnicodeOutput)
@@ -248,7 +249,7 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 	INT len;
 //	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	TCHAR szOut[OUTPUT_BUFFER_SIZE];
-	TCHAR Buffer[MAX_PATH];
+	TCHAR Buffer[OUTPUT_BUFFER_SIZE];
 	DWORD dwWritten;
 //	HANDLE hOutput = GetStdHandle(nStdHandle);
 
@@ -256,8 +257,8 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 	static int LineCount = 0;
 
 	/* used to see how big the screen is */
-	int ScreenLines = 20;
-	int ScreenRows = 40;
+	int ScreenLines = 25;
+	int ScreenRows = 70;
 	/* chars since start of line */
 	int CharSL;
 

@@ -20,7 +20,7 @@ VOID DisplayString(LPCWSTR lpwString)
 
 VOID PrintString (char* fmt, ...)
 {
-   char buffer[512];
+   char buffer[4096];
    va_list ap;
    UNICODE_STRING UnicodeString;
    ANSI_STRING AnsiString;
@@ -28,7 +28,7 @@ VOID PrintString (char* fmt, ...)
    va_start(ap, fmt);
    vsprintf(buffer, fmt, ap);
    va_end(ap);
-   DPRINT1("%s\n", buffer);
+//   DPRINT1("%s\n", buffer);
 
    RtlInitAnsiString (&AnsiString, buffer);
    RtlAnsiStringToUnicodeString (&UnicodeString,

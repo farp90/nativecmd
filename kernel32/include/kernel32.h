@@ -8,7 +8,6 @@
 #define actctx                  202
 #define resource                203
 #define kernel32session         204
-#define MODULE_NAME             L"kernel.dll"
 
 #if DBG
 #define DEBUG_CHANNEL(ch) static ULONG gDebugChannel = ch;

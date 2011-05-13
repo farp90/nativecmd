@@ -389,7 +389,7 @@ DWORD WINAPI FormatMessageA(
     DWORD	destlength;
     LPWSTR	from;
     DWORD	width = dwFlags & FORMAT_MESSAGE_MAX_WIDTH_MASK;
-    HMODULE kernel32_handle = GetModuleHandleW(NULL);
+    HMODULE kernel32_handle = GetModuleHandleW(L"kernel.dll");
 
     TRACE("(0x%x,%p,%d,0x%x,%p,%d,%p)\n",
           dwFlags,lpSource,dwMessageId,dwLanguageId,lpBuffer,nSize,args);
@@ -496,7 +496,7 @@ DWORD WINAPI FormatMessageW(
     DWORD talloced;
     LPWSTR from;
     DWORD width = dwFlags & FORMAT_MESSAGE_MAX_WIDTH_MASK;
-    HMODULE kernel32_handle = GetModuleHandleW(NULL);
+    HMODULE kernel32_handle = GetModuleHandleW(L"kernel.dll");
 
     TRACE("(0x%x,%p,%d,0x%x,%p,%d,%p)\n",
           dwFlags,lpSource,dwMessageId,dwLanguageId,lpBuffer,nSize,args);

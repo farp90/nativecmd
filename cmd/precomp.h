@@ -50,8 +50,8 @@
 #define DEBUG_CHANNEL(ch)
 #endif
 DEBUG_CHANNEL(201);
-//#define TRACE(fmt, ...)         TRACE__(gDebugChannel, fmt, ##__VA_ARGS__)
-#define TRACE(fmt, ...)         DPRINT1(fmt, ##__VA_ARGS__)
+#define TRACE(fmt, ...)         TRACE__(gDebugChannel, fmt, ##__VA_ARGS__)
+//#define TRACE(fmt, ...)         DPRINT1(fmt, ##__VA_ARGS__)
 #define WARN(fmt, ...)          WARN__(gDebugChannel, fmt, ##__VA_ARGS__)
 #define _ANONYMOUS_UNION
 #pragma warning(disable:4716)

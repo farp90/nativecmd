@@ -70,7 +70,7 @@
 //#include "nls/ell.nls"   /* 0x0408  LANG_GREEK, SUBLANG_DEFAULT */
 //
 #include "nls/enu.nls"   /* 0x0409  LANG_ENGLISH, SUBLANG_ENGLISH_US */
-#include "nls/eng.nls"   /* 0x0809  LANG_ENGLISH, SUBLANG_ENGLISH_UK */
+//#include "nls/eng.nls"   /* 0x0809  LANG_ENGLISH, SUBLANG_ENGLISH_UK */
 //#include "nls/ena.nls"   /* 0x0c09  LANG_ENGLISH, SUBLANG_ENGLISH_AUS */
 //#include "nls/enc.nls"   /* 0x1009  LANG_ENGLISH, SUBLANG_ENGLISH_CAN */
 //#include "nls/enz.nls"   /* 0x1409  LANG_ENGLISH, SUBLANG_ENGLISH_NZ */

@@ -1816,7 +1816,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
     DbgPrint("!!!Native Shell START............................................\n");
-#if 1
+#if 0
     __asm
     {
         int 3;

@@ -38,9 +38,11 @@
 /*
  * get a character out-of-band and honor Ctrl-Break characters
  */
+CHAR GetChar(VOID);
 TCHAR
 cgetchar (VOID)
 {
+    return (TCHAR) GetChar();
 //	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
 //	INPUT_RECORD irBuffer;
 //	DWORD  dwRead;
@@ -525,31 +527,32 @@ BOOL FileGetString (HANDLE hFile, LPTSTR lpBuffer, INT nBufferLength)
 #endif
 	return TRUE;
 }
-
+int GetScanCode(VOID);
 INT PagePrompt (VOID)
 {
-	INPUT_RECORD ir;
-
+//	INPUT_RECORD ir;
 	ConOutResPuts(STRING_MISC_HELP1);
 
 	//RemoveBreakHandler ();
-	ConInDisable ();
+//	ConInDisable ();
+//
+//	do
+//	{
+//		ConInKey (&ir);
+//	}
+//	while ((ir.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
+//	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
+//	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
+//
+//	//AddBreakHandler ();
+//	ConInEnable ();
 
-	do
-	{
-		ConInKey (&ir);
-	}
-	while ((ir.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
-	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
-	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
-
-	//AddBreakHandler ();
-	ConInEnable ();
-
-	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||
-	    ((ir.Event.KeyEvent.wVirtualKeyCode == _T('C')) &&
-	     (ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))))
-	{
+//	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||
+//	    ((ir.Event.KeyEvent.wVirtualKeyCode == _T('C')) &&
+//	     (ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))))
+//	{
+    if(GetScanCode() == 1)
+    {
 		bCtrlBreak = TRUE;
 		return PROMPT_BREAK;
 	}
