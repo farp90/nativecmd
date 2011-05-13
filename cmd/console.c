@@ -218,17 +218,17 @@ VOID ConPuts(LPTSTR szText, DWORD nStdHandle)
 
 VOID ConOutResPaging(BOOL NewPage, UINT resID)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
-//	ConOutPrintfPaging(NewPage, szMsg);
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
+	ConOutPrintfPaging(NewPage, szMsg);
 }
 
 VOID ConOutResPuts (UINT resID)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
-//
-//	ConPuts(szMsg, STD_OUTPUT_HANDLE);
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
+
+	ConPuts(szMsg, STD_OUTPUT_HANDLE);
 }
 
 VOID ConOutPuts (LPTSTR szText)
@@ -320,71 +320,71 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 
 VOID ConErrFormatMessage (DWORD MessageId, ...)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	DWORD ret;
-//	LPTSTR text;
-//	va_list arg_ptr;
-//
-//	va_start (arg_ptr, MessageId);
-//	ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-//	       NULL,
-//	       MessageId,
-//	       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-//	       (LPTSTR) &text,
-//	       0,
-//	       &arg_ptr);
-//
-//	va_end (arg_ptr);
-//	if(ret > 0)
-//	{
-//		ConErrPuts (text);
-//		LocalFree(text);
-//	}
-//	else
-//	{
-//		LoadString(CMD_ModuleHandle, STRING_CONSOLE_ERROR, szMsg, RC_STRING_MAX_SIZE);
-//		ConErrPrintf(szMsg);
-//	}
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	DWORD ret;
+	LPTSTR text;
+	va_list arg_ptr;
+
+	va_start (arg_ptr, MessageId);
+	ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+	       NULL,
+	       MessageId,
+	       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+	       (LPTSTR) &text,
+	       0,
+	       &arg_ptr);
+
+	va_end (arg_ptr);
+	if(ret > 0)
+	{
+		ConErrPuts (text);
+		LocalFree(text);
+	}
+	else
+	{
+		LoadString(CMD_ModuleHandle, STRING_CONSOLE_ERROR, szMsg, RC_STRING_MAX_SIZE);
+		ConErrPrintf(szMsg);
+	}
 }
 
 VOID ConOutFormatMessage (DWORD MessageId, ...)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	DWORD ret;
-//	LPTSTR text;
-//	va_list arg_ptr;
-//
-//	va_start (arg_ptr, MessageId);
-//	ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-//	       NULL,
-//	       MessageId,
-//	       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-//	       (LPTSTR) &text,
-//	       0,
-//	       &arg_ptr);
-//
-//	va_end (arg_ptr);
-//	if(ret > 0)
-//	{
-//		ConErrPuts (text);
-//		LocalFree(text);
-//	}
-//	else
-//	{
-//		LoadString(CMD_ModuleHandle, STRING_CONSOLE_ERROR, szMsg, RC_STRING_MAX_SIZE);
-//		ConErrPrintf(szMsg);
-//	}
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	DWORD ret;
+	LPTSTR text;
+	va_list arg_ptr;
+
+	va_start (arg_ptr, MessageId);
+	ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+	       NULL,
+	       MessageId,
+	       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+	       (LPTSTR) &text,
+	       0,
+	       &arg_ptr);
+
+	va_end (arg_ptr);
+	if(ret > 0)
+	{
+		ConErrPuts (text);
+		LocalFree(text);
+	}
+	else
+	{
+		LoadString(CMD_ModuleHandle, STRING_CONSOLE_ERROR, szMsg, RC_STRING_MAX_SIZE);
+		ConErrPrintf(szMsg);
+	}
 }
 
 VOID ConOutResPrintf (UINT resID, ...)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	va_list arg_ptr;
-//
-//	va_start (arg_ptr, resID);
-//	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
-//	ConPrintf(szMsg, arg_ptr, STD_OUTPUT_HANDLE);
-//	va_end (arg_ptr);
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	va_list arg_ptr;
+
+	va_start (arg_ptr, resID);
+	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
+	ConPrintf(szMsg, arg_ptr, STD_OUTPUT_HANDLE);
+	va_end (arg_ptr);
 }
 
 VOID ConOutPrintf (LPTSTR szFormat, ...)
@@ -398,13 +398,13 @@ VOID ConOutPrintf (LPTSTR szFormat, ...)
 
 INT ConOutPrintfPaging (BOOL NewPage, LPTSTR szFormat, ...)
 {
-//	INT iReturn;
-//	va_list arg_ptr;
-//
-//	va_start (arg_ptr, szFormat);
-//	iReturn = ConPrintfPaging(NewPage, szFormat, arg_ptr, STD_OUTPUT_HANDLE);
-//	va_end (arg_ptr);
-//	return iReturn;
+	INT iReturn;
+	va_list arg_ptr;
+
+	va_start (arg_ptr, szFormat);
+	iReturn = ConPrintfPaging(NewPage, szFormat, arg_ptr, STD_OUTPUT_HANDLE);
+	va_end (arg_ptr);
+	return iReturn;
 }
 
 VOID ConErrChar (TCHAR c)
@@ -415,9 +415,9 @@ VOID ConErrChar (TCHAR c)
 
 VOID ConErrResPuts (UINT resID)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
-//	ConPuts(szMsg, STD_ERROR_HANDLE);
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
+	ConPuts(szMsg, STD_ERROR_HANDLE);
 }
 
 VOID ConErrPuts (LPTSTR szText)
@@ -428,13 +428,13 @@ VOID ConErrPuts (LPTSTR szText)
 
 VOID ConErrResPrintf (UINT resID, ...)
 {
-//	TCHAR szMsg[RC_STRING_MAX_SIZE];
-//	va_list arg_ptr;
-//
-//	va_start (arg_ptr, resID);
-//	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
-//	ConPrintf(szMsg, arg_ptr, STD_ERROR_HANDLE);
-//	va_end (arg_ptr);
+	TCHAR szMsg[RC_STRING_MAX_SIZE];
+	va_list arg_ptr;
+
+	va_start (arg_ptr, resID);
+	LoadString(CMD_ModuleHandle, resID, szMsg, RC_STRING_MAX_SIZE);
+	ConPrintf(szMsg, arg_ptr, STD_ERROR_HANDLE);
+	va_end (arg_ptr);
 }
 
 VOID ConErrPrintf (LPTSTR szFormat, ...)

@@ -30,6 +30,7 @@ SOURCES=\
 	string.c\
 	synch.c\
 	thread.c\
+	resources.c\
 	icustubs.cpp\
 	kernel32.rc
 
