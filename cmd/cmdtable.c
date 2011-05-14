@@ -262,7 +262,7 @@ VOID PrintCommandList (VOID)
 			}
 			else
 			{
-				ConOutPrintf (_T("%-10s"), cmdptr->name);
+				ConOutPrintf (_T("%-9s"), cmdptr->name);
 			}
 		}
 

@@ -257,7 +257,7 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 	static int LineCount = 0;
 
 	/* used to see how big the screen is */
-	int ScreenLines = 25;
+	int ScreenLines = 21;
 	int ScreenRows = 70;
 	/* chars since start of line */
 	int CharSL;
@@ -305,6 +305,7 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 		{
             _tcsncpy(Buffer, &szOut[from], i-from);
 			//WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
+			Buffer[i-from] = 0;
             ConWrite(Buffer, (DWORD)(i-from), 0);
 			from = i;
 

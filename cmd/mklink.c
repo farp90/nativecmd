@@ -127,7 +127,6 @@ cmd_mklink(LPTSTR param)
 	LPTSTR Name[2];
 	INT argc, i;
 	LPTSTR *arg;
-
 	if (!_tcsncmp(param, _T("/?"), 2))
 	{
 		ConOutResPuts(STRING_MKLINK_HELP);
@@ -163,11 +162,12 @@ cmd_mklink(LPTSTR param)
 			Name[NumFiles++] = arg[i];
 		}
 	}
-	freep(arg);
+
 
 	if (NumFiles != 2)
 	{
 		error_req_param_missing();
+        freep(arg);
 		return 1;
 	}
 
@@ -183,32 +183,10 @@ cmd_mklink(LPTSTR param)
 //#else
 //			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
 //#endif
-#ifndef CreateSymbolicLink
-WINBASEAPI
-BOOLEAN
-APIENTRY
-CreateSymbolicLinkA (
-    __in LPCSTR lpSymlinkFileName,
-    __in LPCSTR lpTargetFileName,
-    __in DWORD dwFlags
-    );
-WINBASEAPI
-BOOLEAN
-APIENTRY
-CreateSymbolicLinkW (
-    __in LPCWSTR lpSymlinkFileName,
-    __in LPCWSTR lpTargetFileName,
-    __in DWORD dwFlags
-    );
-#ifdef UNICODE
-#define CreateSymbolicLink  CreateSymbolicLinkW
-#else
-#define CreateSymbolicLink  CreateSymbolicLinkA
-#endif // !UNICODE
-#endif
 		if (/*CreateSymbolicLink &&*/ CreateSymbolicLink(Name[0], Name[1], Flags))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_SYMBOLIC, Name[0], Name[1]);
+            freep(arg);
 			return 0;
 		}
 	}
@@ -225,6 +203,7 @@ CreateSymbolicLinkW (
 		if (/*CreateHardLink &&*/ CreateHardLink(Name[0], Name[1], NULL))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_HARD, Name[0], Name[1]);
+            freep(arg);
 			return 0;
 		}
 	}
@@ -233,11 +212,13 @@ CreateSymbolicLinkW (
 		if (CreateJunction(Name[0], Name[1]))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_JUNCTION, Name[0], Name[1]);
+            freep(arg);
 			return 0;
 		}
 	}
 
 	ErrorMessage(GetLastError(), _T("MKLINK"));
+    freep(arg);
 	return 1;
 }
 

@@ -59,5 +59,27 @@ DEBUG_CHANNEL(201);
 VOID DisplayString(LPCWSTR lpwString);
 VOID PrintString (char* fmt, ...);
 VOID PutChar(WCHAR Char);
-
+#ifndef CreateSymbolicLink
+WINBASEAPI
+BOOLEAN
+APIENTRY
+CreateSymbolicLinkA (
+    __in LPCSTR lpSymlinkFileName,
+    __in LPCSTR lpTargetFileName,
+    __in DWORD dwFlags
+    );
+WINBASEAPI
+BOOLEAN
+APIENTRY
+CreateSymbolicLinkW (
+    __in LPCWSTR lpSymlinkFileName,
+    __in LPCWSTR lpTargetFileName,
+    __in DWORD dwFlags
+    );
+#ifdef _UNICODE
+#define CreateSymbolicLink  CreateSymbolicLinkW
+#else
+#define CreateSymbolicLink  CreateSymbolicLinkA
+#endif // !UNICODE
+#endif
 #endif /* __CMD_PRECOMP_H */

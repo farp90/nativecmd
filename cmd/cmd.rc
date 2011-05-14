@@ -24,6 +24,6 @@ BEGIN
     Sylvain Petreolle\n"
 END
 
-1 ICON DISCARDABLE res/terminal.ico
+//1 ICON DISCARDABLE res/terminal.ico
 
 #include "rsrc.rc"
