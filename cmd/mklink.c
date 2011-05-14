@@ -85,7 +85,7 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 		DWORD DataSize = FIELD_OFFSET(REPARSE_DATA_BUFFER, MountPointReparseBuffer.PathBuffer)
 		                 + TargetNTPath.Length + sizeof(WCHAR)
 		                 + TargetLen           + sizeof(WCHAR);
-		PREPARSE_DATA_BUFFER Data = _alloca(DataSize);
+		PREPARSE_DATA_BUFFER Data = cmd_alloc(DataSize);
 
 		/* Fill it out and use it to turn the directory into a reparse point */
 		Data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
@@ -104,10 +104,12 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 		                    Data, DataSize, NULL, 0, &DataSize, NULL))
 		{
 			/* Success */
+            cmd_free(Data);
 			CloseHandle(hJunction);
 			RtlFreeUnicodeString(&TargetNTPath);
 			return TRUE;
 		}
+        cmd_free(Data);
 		CloseHandle(hJunction);
 	}
 	RemoveDirectory(LinkName);
@@ -181,6 +183,29 @@ cmd_mklink(LPTSTR param)
 //#else
 //			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
 //#endif
+#ifndef CreateSymbolicLink
+WINBASEAPI
+BOOLEAN
+APIENTRY
+CreateSymbolicLinkA (
+    __in LPCSTR lpSymlinkFileName,
+    __in LPCSTR lpTargetFileName,
+    __in DWORD dwFlags
+    );
+WINBASEAPI
+BOOLEAN
+APIENTRY
+CreateSymbolicLinkW (
+    __in LPCWSTR lpSymlinkFileName,
+    __in LPCWSTR lpTargetFileName,
+    __in DWORD dwFlags
+    );
+#ifdef UNICODE
+#define CreateSymbolicLink  CreateSymbolicLinkW
+#else
+#define CreateSymbolicLink  CreateSymbolicLinkA
+#endif // !UNICODE
+#endif
 		if (/*CreateSymbolicLink &&*/ CreateSymbolicLink(Name[0], Name[1], Flags))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_SYMBOLIC, Name[0], Name[1]);
