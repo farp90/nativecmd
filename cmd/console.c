@@ -259,8 +259,8 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 		{
             if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
             {
-                ConWrite(szOut, (DWORD)len, hOutput);
-	`           return 0;
+                ConWrite(szOut, (DWORD)len, nStdHandle);
+	            return 0;
             }
 			from = i;
 
@@ -275,7 +275,7 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 
 	if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
     {
-         ConWrite(szOut, (DWORD)len, hOutput);
+         ConWrite(szOut, (DWORD)len, nStdHandle);
     }
 	return 0;
 }
