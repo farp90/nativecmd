@@ -36,18 +36,18 @@ static HANDLE ExtraHandles[10 - 3];
 
 static HANDLE GetHandle(UINT Number)
 {
-//	if (Number < 3)
-//		return GetStdHandle(STD_INPUT_HANDLE - Number);
-//	else
-//		return ExtraHandles[Number - 3];
+	if (Number < 3)
+		return GetStdHandle(STD_INPUT_HANDLE - Number);
+	else
+		return ExtraHandles[Number - 3];
 }
 
 static VOID SetHandle(UINT Number, HANDLE Handle)
 {
-//	if (Number < 3)
-//		SetStdHandle(STD_INPUT_HANDLE - Number, Handle);
-//	else
-//		ExtraHandles[Number - 3] = Handle;
+	if (Number < 3)
+		SetStdHandle(STD_INPUT_HANDLE - Number, Handle);
+	else
+		ExtraHandles[Number - 3] = Handle;
 }
 
 BOOL

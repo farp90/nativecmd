@@ -126,13 +126,13 @@ BaseProcessInitPostImport(VOID)
     /* FIXME: Initialize TS pointers */
     return STATUS_SUCCESS;
 }
-
+#endif
 BOOL
 WINAPI
 BasepInitConsole(VOID)
 {
-    CSR_API_MESSAGE Request;
-    ULONG CsrRequest;
+//    CSR_API_MESSAGE Request;
+//    ULONG CsrRequest;
     NTSTATUS Status;
     BOOLEAN NotConsole = FALSE;
     PRTL_USER_PROCESS_PARAMETERS Parameters = NtCurrentPeb()->ProcessParameters;
@@ -144,7 +144,7 @@ BasepInitConsole(VOID)
     DPRINT("Our current console handles are: %lx, %lx, %lx %lx\n",
            Parameters->ConsoleHandle, Parameters->StandardInput,
            Parameters->StandardOutput, Parameters->StandardError);
-
+#if 0
     /* We have nothing to do if this isn't a console app... */
     if (RtlImageNtHeader(GetModuleHandle(NULL))->OptionalHeader.Subsystem !=
         IMAGE_SUBSYSTEM_NATIVE)
@@ -243,7 +243,19 @@ BasepInitConsole(VOID)
             Parameters->StandardError = Request.Data.AllocConsoleRequest.OutputHandle;
         }
     }
-
+#endif
+    if (!Parameters->StandardInput)
+    {
+        Parameters->StandardInput = (HANDLE)0x3;
+    }
+    if (!Parameters->StandardOutput)
+    {
+        Parameters->StandardOutput = (HANDLE)0x7;
+    }
+    if (!Parameters->StandardError)
+    {
+        Parameters->StandardError = (HANDLE)0xB;
+    }
     DPRINT("Console setup: %lx, %lx, %lx, %lx\n",
             Parameters->ConsoleHandle,
             Parameters->StandardInput,
@@ -251,7 +263,7 @@ BasepInitConsole(VOID)
             Parameters->StandardError);
     return TRUE;
 }
-#endif
+
 
 BOOL
 WINAPI
@@ -385,7 +397,7 @@ DllMain(HANDLE hDll,
             DPRINT1("NLS Init failed\n");
             return FALSE;
         }
-#if 0
+#if 1
         /* Initialize Console Support */
         if (!BasepInitConsole())
         {

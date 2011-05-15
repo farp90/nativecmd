@@ -3,7 +3,7 @@
 #include "misc\profile.c"
 #include "misc\atom.c"
 #include "misc\utils.c"
-//#include "misc\console.c"
+#include "misc\console.c"
 //#include "misc\commdcb.c"
 #include "misc\lcformat.c"
 #include "misc\casemap.c"

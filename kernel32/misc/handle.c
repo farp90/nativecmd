@@ -18,28 +18,28 @@
 
 /* GLOBALS *******************************************************************/
 
-//HANDLE WINAPI
-//DuplicateConsoleHandle (HANDLE	hConsole,
-//			DWORD   dwDesiredAccess,
-//			BOOL	bInheritHandle,
-//			DWORD	dwOptions);
+HANDLE WINAPI
+DuplicateConsoleHandle (HANDLE	hConsole,
+			DWORD   dwDesiredAccess,
+			BOOL	bInheritHandle,
+			DWORD	dwOptions);
 
 /* FUNCTIONS *****************************************************************/
 
-//HANDLE FASTCALL
-//TranslateStdHandle(HANDLE hHandle)
-//{
-//  PRTL_USER_PROCESS_PARAMETERS Ppb = NtCurrentPeb()->ProcessParameters;
-//
-//  switch ((ULONG)hHandle)
-//    {
-//      case STD_INPUT_HANDLE:  return Ppb->StandardInput;
-//      case STD_OUTPUT_HANDLE: return Ppb->StandardOutput;
-//      case STD_ERROR_HANDLE:  return Ppb->StandardError;
-//    }
-//
-//  return hHandle;
-//}
+HANDLE FASTCALL
+TranslateStdHandle(HANDLE hHandle)
+{
+  PRTL_USER_PROCESS_PARAMETERS Ppb = NtCurrentPeb()->ProcessParameters;
+
+  switch ((ULONG)hHandle)
+    {
+      case STD_INPUT_HANDLE:  return Ppb->StandardInput;
+      case STD_OUTPUT_HANDLE: return Ppb->StandardOutput;
+      case STD_ERROR_HANDLE:  return Ppb->StandardError;
+    }
+
+  return hHandle;
+}
 
 /*
  * @implemented
@@ -92,7 +92,7 @@ SetHandleInformation (HANDLE hObject,
   ULONG BytesWritten;
   NTSTATUS Status;
 
-//  hObject = TranslateStdHandle(hObject);
+  hObject = TranslateStdHandle(hObject);
 
   Status = NtQueryObject (hObject,
 			  ObjectHandleFlagInformation,
@@ -140,12 +140,12 @@ BOOL WINAPI CloseHandle(HANDLE  hObject)
 {
    NTSTATUS Status;
 
-//   hObject = TranslateStdHandle(hObject);
-//
-//   if (IsConsoleHandle(hObject))
-//     {
-//	return(CloseConsoleHandle(hObject));
-//     }
+   hObject = TranslateStdHandle(hObject);
+
+   if (IsConsoleHandle(hObject))
+     {
+	return(CloseConsoleHandle(hObject));
+     }
 
    Status = NtClose(hObject);
    if (!NT_SUCCESS(Status))
@@ -172,23 +172,23 @@ BOOL WINAPI DuplicateHandle(HANDLE hSourceProcessHandle,
    DWORD SourceProcessId, TargetProcessId;
    NTSTATUS Status;
 
-//   hSourceHandle = TranslateStdHandle(hSourceHandle);
-//
-//   if (IsConsoleHandle(hSourceHandle))
-//   {
-//      SourceProcessId = GetProcessId(hSourceProcessHandle);
-//      TargetProcessId = GetProcessId(hTargetProcessHandle);
-//      if (!SourceProcessId || !TargetProcessId ||
-//	  SourceProcessId != TargetProcessId ||
-//	  SourceProcessId != GetCurrentProcessId())
-//      {
-//        SetLastError(ERROR_INVALID_PARAMETER);
-//        return FALSE;
-//      }
-//
-//      *lpTargetHandle = DuplicateConsoleHandle(hSourceHandle, dwDesiredAccess, bInheritHandle, dwOptions);
-//      return *lpTargetHandle != INVALID_HANDLE_VALUE;
-//   }
+   hSourceHandle = TranslateStdHandle(hSourceHandle);
+
+   if (IsConsoleHandle(hSourceHandle))
+   {
+      SourceProcessId = GetProcessId(hSourceProcessHandle);
+      TargetProcessId = GetProcessId(hTargetProcessHandle);
+      if (!SourceProcessId || !TargetProcessId ||
+	  SourceProcessId != TargetProcessId ||
+	  SourceProcessId != GetCurrentProcessId())
+      {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return FALSE;
+      }
+
+      *lpTargetHandle = DuplicateConsoleHandle(hSourceHandle, dwDesiredAccess, bInheritHandle, dwOptions);
+      return *lpTargetHandle != INVALID_HANDLE_VALUE;
+   }
 
    Status = NtDuplicateObject(hSourceProcessHandle,
 			      hSourceHandle,

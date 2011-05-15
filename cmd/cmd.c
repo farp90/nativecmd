@@ -474,8 +474,8 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 	}
 
 	/* Get code page if it has been change */
-	//InputCodePage= GetConsoleCP();
-	//OutputCodePage = GetConsoleOutputCP();
+	InputCodePage= GetConsoleCP();
+	OutputCodePage = GetConsoleOutputCP();
 	//SetConsoleTitle (szWindowTitle);
 
 	return dwExitCode;
@@ -1424,7 +1424,7 @@ ProcessInput()
 	}
 }
 
-
+#if 0
 /*
  * control-break handler.
  */
@@ -1485,23 +1485,23 @@ BOOL WINAPI BreakHandler (DWORD dwCtrlType)
 }
 
 
-//VOID AddBreakHandler (VOID)
-//{
-	//SetConsoleCtrlHandler ((PHANDLER_ROUTINE)BreakHandler, TRUE);
-//}
+VOID AddBreakHandler (VOID)
+{
+	SetConsoleCtrlHandler ((PHANDLER_ROUTINE)BreakHandler, TRUE);
+}
 
 
-//VOID RemoveBreakHandler (VOID)
-//{
-//	SetConsoleCtrlHandler ((PHANDLER_ROUTINE)BreakHandler, FALSE);
-//}
+VOID RemoveBreakHandler (VOID)
+{
+	SetConsoleCtrlHandler ((PHANDLER_ROUTINE)BreakHandler, FALSE);
+}
 
 
 /*
  * show commands and options that are available.
  *
  */
-#if 0
+
 static VOID
 ShowCommands (VOID)
 {
@@ -1835,8 +1835,8 @@ int cmd_main (int argc, const TCHAR *argv[])
 	_tchdir(startPath);
 
 	SetFileApisToOEM();
-//	InputCodePage= 0;
-//	OutputCodePage = 0;
+	InputCodePage= 0;
+	OutputCodePage = 0;
 
 //	hConsole = CreateFile(_T("CONOUT$"), GENERIC_READ|GENERIC_WRITE,
 //		FILE_SHARE_READ|FILE_SHARE_WRITE, NULL,
@@ -1852,8 +1852,8 @@ int cmd_main (int argc, const TCHAR *argv[])
 //		CloseHandle(hConsole);
 //	}
 
-	//InputCodePage= GetConsoleCP();
-	//OutputCodePage = GetConsoleOutputCP();
+	InputCodePage= GetConsoleCP();
+	OutputCodePage = GetConsoleOutputCP();
 	CMD_ModuleHandle = GetModuleHandle(NULL);
 
 	/* check switches on command-line */

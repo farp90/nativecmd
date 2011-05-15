@@ -116,55 +116,12 @@ VOID ConInString (LPTSTR lpInput, DWORD dwLength)
 
 static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
 {
-//	DWORD dwWritten;
-//	HANDLE hOutput = GetStdHandle(nStdHandle);
-//
-//	if (WriteConsole(hOutput, str, len, &dwWritten, NULL))
-//		return;
-//
-//	/* We're writing to a file or pipe instead of the console. Convert the
-//	 * string from TCHARs to the desired output format, if the two differ */
-//	if (bUnicodeOutput)
-//	{
-//#ifndef _UNICODE
-//		WCHAR *buffer = cmd_alloc(len * sizeof(WCHAR));
-//		if (!buffer)
-//		{
-//			error_out_of_memory();
-//			return;
-//		}
-//		len = MultiByteToWideChar(OutputCodePage, 0, str, len, buffer, len);
-//		str = (PVOID)buffer;
-//#endif
-//		WriteFile(hOutput, str, len * sizeof(WCHAR), &dwWritten, NULL);
-//#ifndef _UNICODE
-//		cmd_free(buffer);
-//#endif
-//	}
-//	else
-//	{
-//#ifdef _UNICODE
-//		CHAR *buffer = cmd_alloc(len * MB_LEN_MAX * sizeof(CHAR));
-//		if (!buffer)
-//		{
-//			error_out_of_memory();
-//			return;
-//		}
-//		len = WideCharToMultiByte(OutputCodePage, 0, str, len, buffer, len * MB_LEN_MAX, NULL, NULL);
-//		str = (PVOID)buffer;
-//#endif
-//		WriteFile(hOutput, str, len, &dwWritten, NULL);
-//#ifdef _UNICODE
-//		cmd_free(buffer);
-//#endif
-//	}
 	DWORD dwWritten;
-//	HANDLE hOutput = GetStdHandle(nStdHandle);
+	HANDLE hOutput = GetStdHandle(nStdHandle);
 
-//	if (WriteConsole(hOutput, str, len, &dwWritten, NULL))
-//		return;
-//    DPRINT1("nStdHandle:%X\n",nStdHandle);
-//    DPRINT1("nStdHandle:%X\n",*nStdHandle);
+	if (WriteConsole(hOutput, str, len, &dwWritten, NULL))
+		return;
+
 	/* We're writing to a file or pipe instead of the console. Convert the
 	 * string from TCHARs to the desired output format, if the two differ */
 	if (bUnicodeOutput)
@@ -179,8 +136,7 @@ static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
 		len = MultiByteToWideChar(OutputCodePage, 0, str, len, buffer, len);
 		str = (PVOID)buffer;
 #endif
-		//WriteFile(hOutput, str, len * sizeof(WCHAR), &dwWritten, NULL);
-        PrintString("%S", str);
+		WriteFile(hOutput, str, len * sizeof(WCHAR), &dwWritten, NULL);
 #ifndef _UNICODE
 		cmd_free(buffer);
 #endif
@@ -197,8 +153,7 @@ static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
 		len = WideCharToMultiByte(OutputCodePage, 0, str, len, buffer, len * MB_LEN_MAX, NULL, NULL);
 		str = (PVOID)buffer;
 #endif
-		//WriteFile(hOutput, str, len, &dwWritten, NULL);
-        PrintString(str);
+		WriteFile(hOutput, str, len, &dwWritten, NULL);
 #ifdef _UNICODE
 		cmd_free(buffer);
 #endif
@@ -249,9 +204,8 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 	INT len;
 //	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	TCHAR szOut[OUTPUT_BUFFER_SIZE];
-	TCHAR Buffer[OUTPUT_BUFFER_SIZE];
 	DWORD dwWritten;
-//	HANDLE hOutput = GetStdHandle(nStdHandle);
+	HANDLE hOutput = GetStdHandle(nStdHandle);
 
 	/* used to count number of lines since last pause */
 	static int LineCount = 0;
@@ -303,10 +257,11 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 
 		if(LineCount >= ScreenLines)
 		{
-            _tcsncpy(Buffer, &szOut[from], i-from);
-			//WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
-			Buffer[i-from] = 0;
-            ConWrite(Buffer, (DWORD)(i-from), 0);
+            if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
+            {
+                ConWrite(szOut, (DWORD)len, hOutput);
+	`           return 0;
+            }
 			from = i;
 
 			if(PagePrompt() != PROMPT_YES)
@@ -318,8 +273,10 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 		}
 	}
 
-	//WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
-    ConWrite(&szOut[from], (DWORD)(i-from), 0);
+	if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
+    {
+         ConWrite(szOut, (DWORD)len, hOutput);
+    }
 	return 0;
 }
 

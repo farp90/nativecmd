@@ -59,7 +59,7 @@ EXPORTS
   ;CheckRemoteDebuggerPresent
   ;ClearCommBreak
   ;ClearCommError
-  ;CloseConsoleHandle
+  CloseConsoleHandle
   CloseHandle
   ;CloseProfileUserMapping
   ;CloseSystemHandle=__wine_stub_kernel32_dll_60
@@ -169,7 +169,7 @@ EXPORTS
   DosDateTimeToFileTime
   ;DosPathToSessionPathA
   ;DosPathToSessionPathW
-  ;DuplicateConsoleHandle
+  DuplicateConsoleHandle
   DuplicateHandle
   ;EncodePointer
   ;EncodeSystemPointer
@@ -309,7 +309,7 @@ EXPORTS
   ;GetConsoleAliasesLengthA
   ;GetConsoleAliasesLengthW
   ;GetConsoleAliasesW
-  ;GetConsoleCP
+  GetConsoleCP
   ;GetConsoleCharType
   ;GetConsoleCommandHistoryA
   ;GetConsoleCommandHistoryLengthA
@@ -329,7 +329,7 @@ EXPORTS
   ;GetConsoleKeyboardLayoutNameW
   ;GetConsoleMode
   ;GetConsoleNlsMode
-  ;GetConsoleOutputCP
+  GetConsoleOutputCP
   ;GetConsoleProcessList
   ;GetConsoleScreenBufferInfo
   ;GetConsoleSelectionInfo
@@ -472,7 +472,7 @@ EXPORTS
   GetShortPathNameW
   GetStartupInfoA
   GetStartupInfoW
-  ;GetStdHandle
+  GetStdHandle
   GetStringTypeA
   GetStringTypeExA
   GetStringTypeExW
@@ -720,7 +720,7 @@ EXPORTS
   QueueUserWorkItem
   RaiseException
   ;ReOpenFile=__wine_stub_kernel32_dll_717
-  ;ReadConsoleA
+  ReadConsoleA
   ;ReadConsoleInputA
   ;ReadConsoleInputExA
   ;ReadConsoleInputExW
@@ -730,7 +730,7 @@ EXPORTS
   ;ReadConsoleOutputCharacterA
   ;ReadConsoleOutputCharacterW
   ;ReadConsoleOutputW
-  ;ReadConsoleW
+  ReadConsoleW
   ReadDirectoryChangesW
   ReadFile
   ReadFileEx
@@ -791,7 +791,7 @@ EXPORTS
   SetComputerNameExW
   SetComputerNameW
   ;SetConsoleActiveScreenBuffer
-  ;SetConsoleCP
+  SetConsoleCP
   ;SetConsoleCommandHistoryMode
   ;SetConsoleCtrlHandler
   ;SetConsoleCursor
@@ -814,7 +814,7 @@ EXPORTS
   ;SetConsoleNumberOfCommandsA
   ;SetConsoleNumberOfCommandsW
   ;SetConsoleOS2OemFormat
-  ;SetConsoleOutputCP
+  SetConsoleOutputCP
   ;SetConsolePalette
   ;SetConsoleScreenBufferSize
   ;SetConsoleTextAttribute
@@ -865,7 +865,7 @@ EXPORTS
   SetProcessPriorityBoost
   ;SetProcessShutdownParameters
   SetProcessWorkingSetSize
-  ;SetStdHandle
+  SetStdHandle
   ;SetSystemPowerState
   SetSystemTime
   SetSystemTimeAdjustment
@@ -966,7 +966,7 @@ EXPORTS
   ;Wow64DisableWow64FsRedirection
   ;Wow64EnableWow64FsRedirection
   ;Wow64RevertWow64FsRedirection
-  ;WriteConsoleA
+  WriteConsoleA
   ;WriteConsoleInputA
   ;WriteConsoleInputVDMA
   ;WriteConsoleInputVDMW
@@ -976,7 +976,7 @@ EXPORTS
   ;WriteConsoleOutputCharacterA
   ;WriteConsoleOutputCharacterW
   ;WriteConsoleOutputW
-  ;WriteConsoleW
+  WriteConsoleW
   WriteFile
   WriteFileEx
   WriteFileGather
