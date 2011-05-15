@@ -247,7 +247,7 @@ static BOOL IsConsoleProcess(HANDLE Process)
 	return IMAGE_SUBSYSTEM_NATIVE == ProcessPeb.ImageSubsystem;
 }
 
-
+#if 0
 
 #ifdef _UNICODE
 #define SHELLEXECUTETEXT   	"ShellExecuteExW"
@@ -297,7 +297,7 @@ HANDLE RunFile(DWORD flags, LPTSTR filename, LPTSTR params,
 	FreeLibrary(hShell32);
 	return ret ? sei.hProcess : NULL;
 }
-
+#endif
 
 
 /*
@@ -413,7 +413,12 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		// return console to standard mode
 		//SetConsoleMode (GetStdHandle(STD_INPUT_HANDLE),
 		//                ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
-
+#if !defined(NDEBUG) && 0
+    __asm
+    {
+        int 3;
+    }
+#endif
 		if (CreateProcess (szFullName,
 		                   szFullCmdLine,
 		                   NULL,
@@ -428,6 +433,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		{
 			CloseHandle(prci.hThread);
 		}
+#if 0
 		else
 		{
 			// See if we can run this with ShellExecute() ie myfile.xls
@@ -437,7 +443,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 			                        NULL,
 			                        SW_SHOWNORMAL);
 		}
-
+#endif
 		if (prci.hProcess != NULL)
 		{
 			if (IsConsoleProcess(prci.hProcess))
@@ -1815,8 +1821,8 @@ int cmd_main (int argc, const TCHAR *argv[])
 	HANDLE hConsole;
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
-    DbgPrint("!!!Native Shell START............................................\n");
-#if 0
+    DbgPrint("!!!Native Shell START\n");
+#if !defined(NDEBUG) && 0
     __asm
     {
         int 3;
@@ -1860,7 +1866,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	Cleanup();
 
 	cmd_free(lpOriginalEnvironment);
-    DbgPrint("!!!Native Shell Exit.............................................\n");
+    DbgPrint("!!!Native Shell Exit\n");
 	cmd_exit(nErrorLevel);
 	return(nErrorLevel);
 }

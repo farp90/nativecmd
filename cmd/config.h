@@ -17,7 +17,7 @@
 
 
 /* Define to enable history */
-#define FEATURE_HISTORY
+//#define FEATURE_HISTORY
 
 /*Define to enable history wrap (4nt's style)*/
 #define WRAP_HISTORY

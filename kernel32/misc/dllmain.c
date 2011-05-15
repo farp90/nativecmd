@@ -267,13 +267,11 @@ DllMain(HANDLE hDll,
 
     DPRINT("DllMain(hInst %lx, dwReason %lu)\n",
            hDll, dwReason);
-#if 0
-#ifndef NDENUG
+#if !defined(NDEBUG) && 0
     __asm
     {
         int 3;
     }
-#endif
 #endif
     Basep8BitStringToUnicodeString = RtlAnsiStringToUnicodeString;
 
