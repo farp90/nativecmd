@@ -419,17 +419,21 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
         int 3;
     }
 #endif
-		if (CreateProcess (szFullName,
+//		if (CreateProcess (szFullName,
+//		                   szFullCmdLine,
+//		                   NULL,
+//		                   NULL,
+//		                   TRUE,
+//		                   0,			/* CREATE_NEW_PROCESS_GROUP */
+//		                   NULL,
+//		                   NULL,
+//		                   &stui,
+//		                   &prci))
+		if (CreateNativeProcessA (szFullName,
 		                   szFullCmdLine,
 		                   NULL,
 		                   NULL,
-		                   TRUE,
-		                   0,			/* CREATE_NEW_PROCESS_GROUP */
-		                   NULL,
-		                   NULL,
-		                   &stui,
 		                   &prci))
-
 		{
 			CloseHandle(prci.hThread);
 		}

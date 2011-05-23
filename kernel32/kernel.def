@@ -1036,3 +1036,5 @@ EXPORTS
   _purecall
   LoadStringA
   LoadStringW
+  CreateNativeProcessA
+  CreateNativeProcessW

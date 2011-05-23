@@ -111,6 +111,9 @@ COMMAND cmds[] =
 	{_T("exit"), 0, CommandExit},
 
 	{_T("for"), 0, cmd_for},
+#ifdef INCLUDE_CMD_EXPAND
+	{_T("expand"), 0, CommandExpand},
+#endif
 
 #ifdef INCLUDE_CMD_FREE
 	{_T("free"), 0, CommandFree},

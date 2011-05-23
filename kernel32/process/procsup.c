@@ -1710,4 +1710,160 @@ CreateProcessA(LPCSTR lpApplicationName,
                                   NULL);
 }
 
+BOOL
+WINAPI
+CreateNativeProcessW(LPCWSTR lpApplicationName,
+					LPCWSTR lpCommandLine,
+					LPVOID lpEnvironment,
+					LPCWSTR lpCurrentDirectory,
+					LPPROCESS_INFORMATION lpProcessInformation)
+{
+    WCHAR FullPath[MAX_PATH];
+    LPWSTR Remaining;
+    LPWSTR DllPathString;
+    PCWSTR ImgName;
+    PRTL_USER_PROCESS_PARAMETERS ProcessParameters;
+    RTL_USER_PROCESS_INFORMATION ProcessInformation = {0};
+    UNICODE_STRING DllPath, ImageName,ImagePath, CommandLine, CurrentDirectory;
+    NTSTATUS Status;
+    PWCHAR ScanChar;
+    ULONG EnviroSize;
+    SIZE_T Size;
+    PPEB OurPeb = NtCurrentPeb();
+    LPVOID Environment = lpEnvironment;
+
+    PROCESS_BASIC_INFORMATION ProcessBasicInfo;
+    PRTL_USER_PROCESS_PARAMETERS RemoteParameters;
+    PPEB RemotePeb;
+    Status = GetFullPathNameW(lpApplicationName,
+                              MAX_PATH,
+                              FullPath,
+                              &Remaining);
+
+    /* Get the DLL Path */
+    //DllPathString = BasepGetDllPath(FullPath, Environment);
+    DllPathString = OurPeb->ProcessParameters->DllPath.Buffer;
+
+    RtlDosPathNameToNtPathName_U(FullPath, &ImagePath, &ImgName, NULL);
+    /* Initialize Strings */
+    RtlInitUnicodeString(&DllPath, DllPathString);
+    RtlInitUnicodeString(&ImageName, ImgName);
+    RtlInitUnicodeString(&CommandLine, lpCommandLine);
+    RtlInitUnicodeString(&CurrentDirectory, lpCurrentDirectory?lpCurrentDirectory:L"x:");
+    Status = RtlCreateProcessParameters(&ProcessParameters,
+                                        &ImageName,
+                                        &DllPath,
+                                        lpCurrentDirectory ?
+                                        &CurrentDirectory : NULL,
+                                        &CommandLine,
+                                        Environment,
+                                        NULL,
+                                        NULL,
+                                        NULL,
+                                        NULL);
+//    ProcessParameters -> ConsoleHandle = OurPeb->ProcessParameters -> ConsoleHandle;
+//    ProcessParameters -> StandardInput = OurPeb->ProcessParameters -> StandardInput;
+//    ProcessParameters -> StandardOutput = OurPeb->ProcessParameters -> StandardOutput;
+//    ProcessParameters -> StandardError = OurPeb->ProcessParameters -> StandardError;
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("Failed to create process parameters! Err:%X\n", Status);
+        return FALSE;
+    }
+    Status = RtlCreateUserProcess(&ImagePath,
+                                OBJ_CASE_INSENSITIVE,
+                                ProcessParameters,
+                                NULL,
+                                NULL,
+                                NtCurrentProcess(),
+                                TRUE,
+                                NULL,
+                                NULL,
+                                &ProcessInformation);
+
+    if (!NT_SUCCESS(Status))
+    {
+        DbgPrint("RtlCreateUserProcess failed.Err:%X\n", Status);
+        return FALSE;
+    }
+    Status = NtQueryInformationProcess(ProcessInformation.ProcessHandle,
+                                   ProcessBasicInformation,
+                                   &ProcessBasicInfo,
+                                   sizeof(ProcessBasicInfo),
+                                   NULL);
+    if (!NT_SUCCESS(Status))
+    {
+        DbgPrint("Failed to Query Information Process\n");
+    }
+    RemotePeb = ProcessBasicInfo.PebBaseAddress;
+    Status = NtReadVirtualMemory(ProcessInformation.ProcessHandle,
+                             &RemotePeb->ProcessParameters,
+                             &RemoteParameters,
+                             sizeof(PVOID),
+                             NULL);
+    if (!NT_SUCCESS(Status))
+    {
+        DbgPrint("Failed to read memory\n");
+    }
+    BasepDuplicateAndWriteHandle(ProcessInformation.ProcessHandle,
+                                 OurPeb->ProcessParameters->StandardInput,
+                                 &RemoteParameters->StandardInput);
+    BasepDuplicateAndWriteHandle(ProcessInformation.ProcessHandle,
+                                 OurPeb->ProcessParameters->StandardOutput,
+                                 &RemoteParameters->StandardOutput);
+    BasepDuplicateAndWriteHandle(ProcessInformation.ProcessHandle,
+                                 OurPeb->ProcessParameters->StandardError,
+                                 &RemoteParameters->StandardError);
+
+    Status = NtResumeThread(ProcessInformation.ThreadHandle, NULL);
+
+    if (!NT_SUCCESS(Status))
+    {
+        DbgPrint("NtResumeThread failed.Err:%X\n", Status);
+        return FALSE;
+    }
+
+    lpProcessInformation->hProcess = ProcessInformation.ProcessHandle;
+    lpProcessInformation->hThread = ProcessInformation.ThreadHandle;
+
+    return TRUE;
+    }
+
+
+    BOOL
+    WINAPI
+    CreateNativeProcessA(LPCSTR lpApplicationName,
+                    LPCSTR lpCommandLine,
+                    LPVOID lpEnvironment,
+                    LPCSTR lpCurrentDirectory,
+                    LPPROCESS_INFORMATION lpProcessInformation)
+    {
+    UNICODE_STRING LiveCommandLine;
+    UNICODE_STRING ApplicationName;
+    UNICODE_STRING CurrentDirectory;
+    BOOL Status;
+    CurrentDirectory.Buffer = NULL;
+    Basep8BitStringToDynamicUnicodeString(&LiveCommandLine,
+                                      lpCommandLine);
+
+    if (lpApplicationName)
+    {
+        Basep8BitStringToDynamicUnicodeString(&ApplicationName,
+                                              lpApplicationName);
+    }
+    if (lpCurrentDirectory)
+    {
+        Basep8BitStringToDynamicUnicodeString(&CurrentDirectory,
+                                              lpCurrentDirectory);
+    }
+    Status = CreateNativeProcessW(ApplicationName.Buffer,
+                        LiveCommandLine.Buffer,
+                        lpEnvironment,
+                        CurrentDirectory.Buffer,
+                        lpProcessInformation);
+    RtlFreeUnicodeString(&ApplicationName);
+    RtlFreeUnicodeString(&LiveCommandLine);
+    RtlFreeUnicodeString(&CurrentDirectory);
+    return Status;
+    }
 /* EOF */

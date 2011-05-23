@@ -37,6 +37,7 @@ SOURCES=alias.c \
 	dirstack.c \
 	echo.c \
 	error.c \
+  expand.c\
 	filecomp.c \
 	for.c \
 	free.c \

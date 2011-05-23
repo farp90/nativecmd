@@ -82,4 +82,26 @@ CreateSymbolicLinkW (
 #define CreateSymbolicLink  CreateSymbolicLinkA
 #endif // !UNICODE
 #endif
+
+#ifdef _UNICODE
+#define CreateNativeProcess CreateNativeProcessW
+#else
+#define CreateNativeProcess CreateNativeProcessA
+#endif
+WINBASEAPI
+BOOL
+WINAPI
+CreateNativeProcessA(LPCSTR lpApplicationName,
+					LPCSTR lpCommandLine,
+					LPVOID lpEnvironment,
+					LPCSTR lpCurrentDirectory,
+					LPPROCESS_INFORMATION lpProcessInformation);
+WINBASEAPI
+BOOL
+WINAPI
+CreateNativeProcessW(LPCWSTR lpApplicationName,
+					LPCWSTR lpCommandLine,
+					LPVOID lpEnvironment,
+					LPCWSTR lpCurrentDirectory,
+					LPPROCESS_INFORMATION lpProcessInformation);
 #endif /* __CMD_PRECOMP_H */
