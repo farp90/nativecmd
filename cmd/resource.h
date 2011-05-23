@@ -91,6 +91,7 @@
 #define STRING_ASSOC_HELP                  616
 #define STRING_MKLINK_HELP                 617
 
+#define STRING_WINDOWS_VERSION             622
 #define STRING_REACTOS_VERSION             623
 #define STRING_CMD_SHELLINFO               624
 

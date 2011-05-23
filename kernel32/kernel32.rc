@@ -1,5 +1,5 @@
 #define REACTOS_VERSION_DLL
-#define REACTOS_STR_FILE_DESCRIPTION	"kernel.dll build by ×ã¼£\0"
+#define REACTOS_STR_FILE_DESCRIPTION	"Native Kernel\0"
 #define REACTOS_STR_INTERNAL_NAME	"kernel.dll\0"
 #define REACTOS_STR_ORIGINAL_FILENAME	"kernel.dll\0"
 #include <reactos/version.rc>

@@ -1,29 +1,30 @@
 #include <windows.h>
 #include "resource.h"
-#include "cmdver.h"
+//#include "cmdver.h"
+#include "config.h"
 
-#define REACTOS_STR_FILE_DESCRIPTION	"ReactOS Command Processor\0"
-#define REACTOS_STR_INTERNAL_NAME	"cmd\0"
-#define REACTOS_STR_ORIGINAL_FILENAME	"cmd.exe\0"
-#define REACTOS_STR_ORIGINAL_COPYRIGHT	"Copyright (C) 1994-1998 Tim Norman and others\0"
-#define REACTOS_STR_LEGAL_COPYRIGHT     "Copyright (C) 1998-2006 Eric Kohl and others\0"
+#define REACTOS_STR_FILE_DESCRIPTION	"Native Command Processor\0"
+#define REACTOS_STR_INTERNAL_NAME	"ncmd\0"
+#define REACTOS_STR_ORIGINAL_FILENAME	"ncmd.exe\0"
+//#define REACTOS_STR_ORIGINAL_COPYRIGHT	"Copyright (C) 2011-2011 ×ã¼£ and others\0"
+#define REACTOS_STR_LEGAL_COPYRIGHT     "Copyright (C) 2011-2011 ×ã¼£ and others\0"
 
 #include <reactos/version.rc>
-
+/*
 STRINGTABLE DISCARDABLE
 BEGIN
-  STRING_FREEDOS_DEV, "    Tim Norman        Matt Rains\n\
+  STRING_FREEDOS_DEV, "    ×ã¼£\n\
     Evan Jeffrey      Steffen Kaiser\n\
     Svante Frey       Oliver Mueller\n\
     Aaron Kaufman     Marc Desrochers\n\
     Rob Lake          John P Price\n\
     Hans B Pufal\n"
 
-  STRING_REACTOS_DEV,  "    Eric Kohl         Emanuele Aliberti\n\
+  STRING_REACTOS_DEV,  "    ×ã¼£\n\
     Paolo Pantaleo    Phillip Susi\n\
     Sylvain Petreolle\n"
 END
-
+*/
 //1 ICON DISCARDABLE res/terminal.ico
 
 #include "rsrc.rc"

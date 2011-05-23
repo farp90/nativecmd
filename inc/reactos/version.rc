@@ -17,11 +17,11 @@
 #include "buildno.h"
 
 /* Define some defaults (shouldn't be overwritten by applications */
-#define REACTOS_DEFAULT_STR_COMPANY_NAME    "ReactOS Development Team\0"
-#define REACTOS_DEFAULT_STR_DESCRIPTION     "ReactOS Core Component\0"
+#define REACTOS_DEFAULT_STR_COMPANY_NAME    "Native Cmd Development Team\0"
+#define REACTOS_DEFAULT_STR_DESCRIPTION     "Native Core Component\0"
 #define REACTOS_DEFAULT_STR_INTERNAL_NAME   "\0"
-#define REACTOS_DEFAULT_STR_LEGAL_COPYRIGHT "Copyright 1998-" COPYRIGHT_YEAR " ReactOS Team\0"
-#define REACTOS_DEFAULT_STR_PRODUCT_NAME    "ReactOS Operating System\0"
+#define REACTOS_DEFAULT_STR_LEGAL_COPYRIGHT "Copyright 2011-" COPYRIGHT_YEAR " Native Cmd Team\0"
+#define REACTOS_DEFAULT_STR_PRODUCT_NAME    "Native Cmd\0"
 
 /* Set defaults for everything, unless overridden */
 #ifndef REACTOS_FILEVERSION

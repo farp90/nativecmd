@@ -18,13 +18,13 @@
 #define __VERSION_H
 
 #define KERNEL_VERSION_MAJOR        0
-#define KERNEL_VERSION_MINOR        3
-#define KERNEL_VERSION_PATCH_LEVEL  13
+#define KERNEL_VERSION_MINOR        0
+#define KERNEL_VERSION_PATCH_LEVEL  1
 
 #define COPYRIGHT_YEAR              "2011"
 
 /* KERNEL_VERSION_BUILD_TYPE is L"SVN", L"RC1", L"RC2" or L"" (for the release) */
-#define KERNEL_VERSION_BUILD_TYPE   L""
+#define KERNEL_VERSION_BUILD_TYPE   L"M1"
 
 
 #endif

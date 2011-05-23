@@ -622,8 +622,8 @@ ExecutePipeline(PARSED_COMMAND *Cmd)
 {
 #ifdef FEATURE_REDIRECTION
 	HANDLE hInput = NULL;
-//	HANDLE hOldConIn = GetStdHandle(STD_INPUT_HANDLE);
-//	HANDLE hOldConOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE hOldConIn = GetStdHandle(STD_INPUT_HANDLE);
+	HANDLE hOldConOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	HANDLE hProcess[MAXIMUM_WAIT_OBJECTS];
 	INT nProcesses = 0;
 	DWORD dwExitCode;
@@ -649,7 +649,7 @@ ExecutePipeline(PARSED_COMMAND *Cmd)
 
 		/* The writing side of the pipe is STDOUT for this process */
 		SetHandleInformation(hPipeWrite, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
-		//SetStdHandle(STD_OUTPUT_HANDLE, hPipeWrite);
+		SetStdHandle(STD_OUTPUT_HANDLE, hPipeWrite);
 
 		/* Execute it (error check is done later for easier cleanup) */
 		hProcess[nProcesses] = ExecuteAsync(Cmd->Subcommands);
@@ -659,7 +659,7 @@ ExecutePipeline(PARSED_COMMAND *Cmd)
 
 		/* The reading side of the pipe will be STDIN for the next process */
 		SetHandleInformation(hPipeRead, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
-		//SetStdHandle(STD_INPUT_HANDLE, hPipeRead);
+		SetStdHandle(STD_INPUT_HANDLE, hPipeRead);
 		hInput = hPipeRead;
 
 		if (!hProcess[nProcesses])
@@ -670,13 +670,13 @@ ExecutePipeline(PARSED_COMMAND *Cmd)
 	} while (Cmd->Type == C_PIPE);
 
 	/* The last process uses the original STDOUT */
-	//SetStdHandle(STD_OUTPUT_HANDLE, hOldConOut);
+	SetStdHandle(STD_OUTPUT_HANDLE, hOldConOut);
 	hProcess[nProcesses] = ExecuteAsync(Cmd);
 	if (!hProcess[nProcesses])
 		goto failed;
 	nProcesses++;
 	CloseHandle(hInput);
-	//SetStdHandle(STD_INPUT_HANDLE, hOldConIn);
+	SetStdHandle(STD_INPUT_HANDLE, hOldConIn);
 
 	/* Wait for all processes to complete */
 	EnterCriticalSection(&ChildProcessRunningLock);
@@ -699,8 +699,8 @@ failed:
 		TerminateProcess(hProcess[nProcesses], 0);
 		CloseHandle(hProcess[nProcesses]);
 	}
-	//SetStdHandle(STD_INPUT_HANDLE, hOldConIn);
-	//SetStdHandle(STD_OUTPUT_HANDLE, hOldConOut);
+	SetStdHandle(STD_INPUT_HANDLE, hOldConIn);
+	SetStdHandle(STD_OUTPUT_HANDLE, hOldConOut);
 #endif
 }
 
@@ -1514,7 +1514,7 @@ ShowCommands (VOID)
 	PrintCommandList();
 
 	/* print feature list */
-	ConOutResPuts(STRING_CMD_HELP2);
+//	ConOutResPuts(STRING_CMD_HELP2);
 
 #ifdef FEATURE_ALIASES
 	ConOutResPuts(STRING_CMD_HELP3);
@@ -1757,10 +1757,8 @@ Initialize()
 	if (!*ptr)
 	{
 		/* If neither /C or /K was given, display a simple version string */
-		ConOutResPrintf(STRING_REACTOS_VERSION,
-			_T(KERNEL_RELEASE_STR),
-			_T(KERNEL_VERSION_BUILD_STR));
-		ConOutPuts(_T("(C) Copyright 1998-") _T(COPYRIGHT_YEAR) _T(" ReactOS Team."));
+        ShortVersion();
+		ConOutPuts(_T("(C) Copyright 2011-") _T(COPYRIGHT_YEAR) _T(" Native Cmd Team."));
 	}
 
 //	if (AutoRun)
@@ -1826,7 +1824,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
     DbgPrint("!!!Native Shell START\n");
-#if !defined(NDEBUG) && 0
+#if !defined(NDEBUG) && 1
     __asm
     {
         int 3;
