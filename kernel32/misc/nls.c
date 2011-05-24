@@ -75,7 +75,7 @@ NlsInit(VOID)
      * process, but since we don't have anything like that (yet?) we
      * always try to create the "\Nls" directory here.
      */
-    RtlInitUnicodeString(&DirName, L"\\Nls");
+    RtlInitUnicodeString(&DirName, L"\\NtNls");
 
     InitializeObjectAttributes(&ObjectAttributes,
                                &DirName,
@@ -241,7 +241,7 @@ IntGetCodePageEntry(UINT CodePage)
     if (!GetNlsSectionName(CodePage,
                            10,
                            0,
-                           "\\Nls\\NlsSectionCP",
+                           "\\NtNls\\NlsSectionCP",
                            SectionName,
                            sizeof(SectionName)))
     {
@@ -1115,7 +1115,7 @@ IntIsLeadByte(PCPTABLEINFO TableInfo, BYTE Byte)
  *        to NlsConvertIntegerToString function, which is used for the
  *        actual conversion of the code page number.
  * @param BaseName
- *        Base name of the section. (ex. "\\Nls\\NlsSectionCP")
+ *        Base name of the section. (ex. "\\NtNls\\NlsSectionCP")
  * @param Result
  *        Buffer that will hold the constructed name.
  * @param ResultSize
