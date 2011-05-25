@@ -92,30 +92,30 @@ static BOOL Exiting(PARSED_COMMAND *Cmd)
 
 /* Read the contents of a text file into memory,
  * dynamically allocating enough space to hold it all */
-//static LPTSTR ReadFileContents(FILE *InputFile, TCHAR *Buffer)
-//{
-//	DWORD Len = 0;
-//	DWORD AllocLen = 1000;
-//	LPTSTR Contents = cmd_alloc(AllocLen * sizeof(TCHAR));
-//	if (!Contents)
-//		return NULL;
-//
-//	while (_fgetts(Buffer, CMDLINE_LENGTH, InputFile))
-//	{
-//		DWORD CharsRead = _tcslen(Buffer);
-//		while (Len + CharsRead >= AllocLen)
-//		{
-//			Contents = cmd_realloc(Contents, (AllocLen *= 2) * sizeof(TCHAR));
-//			if (!Contents)
-//				return NULL;
-//		}
-//		_tcscpy(&Contents[Len], Buffer);
-//		Len += CharsRead;
-//	}
-//
-//	Contents[Len] = _T('\0');
-//	return Contents;
-//}
+static LPTSTR ReadFileContents(FILE *InputFile, TCHAR *Buffer)
+{
+	DWORD Len = 0;
+	DWORD AllocLen = 1000;
+	LPTSTR Contents = cmd_alloc(AllocLen * sizeof(TCHAR));
+	if (!Contents)
+		return NULL;
+
+	while (_fgetts(Buffer, CMDLINE_LENGTH, InputFile))
+	{
+		DWORD CharsRead = _tcslen(Buffer);
+		while (Len + CharsRead >= AllocLen)
+		{
+			Contents = cmd_realloc(Contents, (AllocLen *= 2) * sizeof(TCHAR));
+			if (!Contents)
+				return NULL;
+		}
+		_tcscpy(&Contents[Len], Buffer);
+		Len += CharsRead;
+	}
+
+	Contents[Len] = _T('\0');
+	return Contents;
+}
 
 static INT ForF(PARSED_COMMAND *Cmd, LPTSTR List, TCHAR *Buffer)
 {
@@ -263,35 +263,35 @@ static INT ForF(PARSED_COMMAND *Cmd, LPTSTR List, TCHAR *Buffer)
 			End[-1] = _T('\0');
 			FullInput = cmd_dup(Start + 1);
 		}
-//		else if (*Start == CommandQuote && End[-1] == CommandQuote)
-//		{
-//			/* Read input from a command */
-//			End[-1] = _T('\0');
-//			InputFile = _tpopen(Start + 1, _T("r"));
-//			if (!InputFile)
-//			{
-//				error_bad_command(Start + 1);
-//				return 1;
-//			}
-//			FullInput = ReadFileContents(InputFile, Buffer);
-//			_pclose(InputFile);
-//		}
-//		else
-//		{
-//			/* Read input from a file */
-//			TCHAR Temp = *End;
-//			*End = _T('\0');
-//			StripQuotes(Start);
-//			InputFile = _tfopen(Start, _T("r"));
-//			*End = Temp;
-//			if (!InputFile)
-//			{
-//				error_sfile_not_found(Start);
-//				return 1;
-//			}
-//			FullInput = ReadFileContents(InputFile, Buffer);
-//			fclose(InputFile);
-//		}
+		else if (*Start == CommandQuote && End[-1] == CommandQuote)
+		{
+			/* Read input from a command */
+			End[-1] = _T('\0');
+			InputFile = _tpopen(Start + 1, _T("r"));
+			if (!InputFile)
+			{
+				error_bad_command(Start + 1);
+				return 1;
+			}
+			FullInput = ReadFileContents(InputFile, Buffer);
+			_pclose(InputFile);
+		}
+		else
+		{
+			/* Read input from a file */
+			TCHAR Temp = *End;
+			*End = _T('\0');
+			StripQuotes(Start);
+			InputFile = _tfopen(Start, _T("r"));
+			*End = Temp;
+			if (!InputFile)
+			{
+				error_sfile_not_found(Start);
+				return 1;
+			}
+			FullInput = ReadFileContents(InputFile, Buffer);
+			fclose(InputFile);
+		}
 
 		if (!FullInput)
 		{

@@ -60,9 +60,9 @@
 //DEBUG_CHANNEL(301);
 //#define TRACE(fmt, ...)         TRACE__(gDebugChannel, fmt, ##__VA_ARGS__)
 #define TRACE(fmt, ...)         DPRINT1(fmt, ##__VA_ARGS__)
-//#define WARN(fmt, ...)          WARN__(gDebugChannel, fmt, ##__VA_ARGS__)
-//#define FIXME(fmt, ...)         WARN__(gDebugChannel, fmt,## __VA_ARGS__)
-//#define ERR(fmt, ...)           ERR__(gDebugChannel, fmt, ##__VA_ARGS__)
+#define WARN(fmt, ...)          DPRINT1(fmt, ##__VA_ARGS__)
+#define FIXME(fmt, ...)         DPRINT1(fmt, ##__VA_ARGS__)
+#define ERR(fmt, ...)           DPRINT1(fmt, ##__VA_ARGS__)
 //#define debugstr_a
 //#define debugstr_an
 //#define debugstr_w

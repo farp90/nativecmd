@@ -12,6 +12,8 @@ TARGETLIBS=$(TARGETLIBS)\
 
 SOURCES= \
 	chdir.c\
+	file.c\
 	getcwd.c\
 	getdcwd.c\
-	getdrive.c
+	getdrive.c\
+	popen.c
