@@ -391,8 +391,9 @@ BasepGetDllPath(LPWSTR FullPath,
     RtlLeaveCriticalSection(&BaseDllDirectoryLock);
 
     /* There is no base DLL directory */
-    UNIMPLEMENTED;
+    //UNIMPLEMENTED;
 
+    DllPath = NtCurrentPeb()->ProcessParameters->DllPath.Buffer;
     /* Return dll path */
     return DllPath;
 }
@@ -1709,7 +1710,7 @@ CreateProcessA(LPCSTR lpApplicationName,
                                   lpProcessInformation,
                                   NULL);
 }
-
+#if 0
 BOOL
 WINAPI
 CreateNativeProcessW(LPCWSTR lpApplicationName,
@@ -1830,14 +1831,14 @@ CreateNativeProcessW(LPCWSTR lpApplicationName,
     }
 
 
-    BOOL
-    WINAPI
-    CreateNativeProcessA(LPCSTR lpApplicationName,
-                    LPCSTR lpCommandLine,
-                    LPVOID lpEnvironment,
-                    LPCSTR lpCurrentDirectory,
-                    LPPROCESS_INFORMATION lpProcessInformation)
-    {
+BOOL
+WINAPI
+CreateNativeProcessA(LPCSTR lpApplicationName,
+                LPCSTR lpCommandLine,
+                LPVOID lpEnvironment,
+                LPCSTR lpCurrentDirectory,
+                LPPROCESS_INFORMATION lpProcessInformation)
+{
     UNICODE_STRING LiveCommandLine;
     UNICODE_STRING ApplicationName;
     UNICODE_STRING CurrentDirectory;
@@ -1865,5 +1866,6 @@ CreateNativeProcessW(LPCWSTR lpApplicationName,
     RtlFreeUnicodeString(&LiveCommandLine);
     RtlFreeUnicodeString(&CurrentDirectory);
     return Status;
-    }
+}
+#endif
 /* EOF */

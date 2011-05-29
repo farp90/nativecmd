@@ -413,26 +413,21 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		// return console to standard mode
 		//SetConsoleMode (GetStdHandle(STD_INPUT_HANDLE),
 		//                ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
-#if !defined(NDEBUG) && 0
+#if !defined(NDEBUG) && 1
     __asm
     {
         int 3;
     }
 #endif
-//		if (CreateProcess (szFullName,
-//		                   szFullCmdLine,
-//		                   NULL,
-//		                   NULL,
-//		                   TRUE,
-//		                   0,			/* CREATE_NEW_PROCESS_GROUP */
-//		                   NULL,
-//		                   NULL,
-//		                   &stui,
-//		                   &prci))
-		if (CreateNativeProcessA (szFullName,
+		if (CreateProcess (szFullName,
 		                   szFullCmdLine,
 		                   NULL,
 		                   NULL,
+		                   TRUE,
+		                   0,			/* CREATE_NEW_PROCESS_GROUP */
+		                   NULL,
+		                   NULL,
+		                   &stui,
 		                   &prci))
 		{
 			CloseHandle(prci.hThread);

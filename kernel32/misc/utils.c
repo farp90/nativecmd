@@ -439,19 +439,19 @@ BasepMapFile(IN LPCWSTR lpApplicationName,
     if (!RtlDosPathNameToNtPathName_U(lpApplicationName,
                                       ApplicationName,
                                       NULL,
-                                      &RelativeName))
+                                      NULL/*&RelativeName*/))
     {
         return STATUS_OBJECT_PATH_NOT_FOUND;
     }
 
     DPRINT("ApplicationName %wZ\n", ApplicationName);
-    DPRINT("RelativeName %wZ\n", &RelativeName.DosPath);
+//    DPRINT("RelativeName %wZ\n", &RelativeName.DosPath);
 
     /* Did we get a relative name? */
-    if (RelativeName.DosPath.Length)
-    {
-        ApplicationName = &RelativeName.DosPath;
-    }
+//    if (RelativeName.DosPath.Length)
+//    {
+//        ApplicationName = &RelativeName.DosPath;
+//    }
 
     /* Initialize the Object Attributes */
     InitializeObjectAttributes(&ObjectAttributes,
