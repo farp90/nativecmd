@@ -413,7 +413,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		// return console to standard mode
 		//SetConsoleMode (GetStdHandle(STD_INPUT_HANDLE),
 		//                ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
-#if !defined(NDEBUG) && 1
+#if !defined(NDEBUG) && 0
     __asm
     {
         int 3;
@@ -1668,7 +1668,14 @@ Initialize()
 	if (0 != GetModuleFileName (NULL, ModuleName, _MAX_PATH + 1))
 	{
 		ModuleName[_MAX_PATH] = _T('\0');
-		SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
+		if (_tcsncmp(_T("\\??\\"), ModuleName, 4))
+		{
+			SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
+		}
+		else
+		{
+			SetEnvironmentVariable (_T("COMSPEC"), &ModuleName[4]);
+		}
 	}
 
 	/* add ctrl break handler */
