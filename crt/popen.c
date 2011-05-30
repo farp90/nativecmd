@@ -37,7 +37,6 @@ FILE * __cdecl _tpopen (const _TCHAR *cm, const _TCHAR *md) /* program name, pip
     SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
     UINT size;
     TRACE(MK_STR(_tpopen)"('%"sT"', '%"sT"')\n", cm, md);
-
     if (cm == NULL)
         return( NULL );
 

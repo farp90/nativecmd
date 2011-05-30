@@ -121,9 +121,9 @@ static char tmpname[MAX_PATH];
  * or flags; doing so would probably be better accomplished with per-file
  * protection, rather than locking the whole table for every change.
  */
-static CRITICAL_SECTION FILE_cs;
-#define LOCK_FILES()    do { EnterCriticalSection(&FILE_cs); } while (0)
-#define UNLOCK_FILES()  do { LeaveCriticalSection(&FILE_cs); } while (0)
+//static CRITICAL_SECTION FILE_cs;
+//#define LOCK_FILES()    do { EnterCriticalSection(&FILE_cs); } while (0)
+//#define UNLOCK_FILES()  do { LeaveCriticalSection(&FILE_cs); } while (0)
 
 static inline BOOL is_valid_fd(int fd)
 {
@@ -152,7 +152,7 @@ HANDLE fdtoh(int fd)
 /* INTERNAL: free a file entry fd */
 static void free_fd(int fd)
 {
-  LOCK_FILES();
+  //LOCK_FILES();
   fdesc[fd].handle = INVALID_HANDLE_VALUE;
   fdesc[fd].wxflag = 0;
   TRACE(":fd (%d) freed\n",fd);
@@ -172,7 +172,7 @@ static void free_fd(int fd)
     if (fd < fdstart)
       fdstart = fd;
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
 }
 
 /* INTERNAL: Allocate an fd slot from a Win32 HANDLE, starting from fd */
@@ -214,10 +214,10 @@ static int alloc_fd_from(HANDLE hand, int flag, int fd)
 {
   int ret;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   TRACE(":handle (%p) allocating fd (%d)\n",hand,fdstart);
   ret = alloc_fd_from(hand, flag, fdstart);
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return ret;
 }
 
@@ -311,8 +311,8 @@ void msvcrt_init_io(void)
   STARTUPINFOA  si;
   int           i;
 
-  InitializeCriticalSection(&FILE_cs);
-  FILE_cs.DebugInfo->Flags = (DWORD_PTR)(__FILE__ ": FILE_cs");
+//  InitializeCriticalSection(&FILE_cs);
+//  FILE_cs.DebugInfo->Flags = (DWORD_PTR)(__FILE__ ": FILE_cs");
   GetStartupInfoA(&si);
   if (si.cbReserved2 >= sizeof(unsigned int) && si.lpReserved2 != NULL)
   {
@@ -580,7 +580,7 @@ int __cdecl _flushall(void)
 {
   int i, num_flushed = 0;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   for (i = 3; i < stream_idx; i++)
     if (fstreams[i] && fstreams[i]->_flag)
     {
@@ -595,7 +595,7 @@ int __cdecl _flushall(void)
         num_flushed++;
       }
     }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
 
   TRACE(":flushed (%d) handles\n",num_flushed);
   return num_flushed;
@@ -623,7 +623,7 @@ int __cdecl _close(int fd)
   HANDLE hand;
   int ret;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   hand = fdtoh(fd);
   TRACE(":fd (%d) handle (%p)\n",fd,hand);
   if (hand == INVALID_HANDLE_VALUE)
@@ -639,7 +639,7 @@ int __cdecl _close(int fd)
     free_fd(fd);
     ret = 0;
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   TRACE(":ok\n");
   return ret;
 }
@@ -684,7 +684,7 @@ int __cdecl _dup2(int od, int nd)
   int ret;
 
   TRACE("(od=%d, nd=%d)\n", od, nd);
-  LOCK_FILES();
+  //LOCK_FILES();
   if (nd < MAX_FILES && is_valid_fd(od))
   {
     HANDLE handle;
@@ -719,7 +719,7 @@ int __cdecl _dup2(int od, int nd)
     //*_errno() = EBADF;
     ret = -1;
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return ret;
 }
 
@@ -730,13 +730,13 @@ int __cdecl _dup(int od)
 {
   int fd, ret;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   fd = fdstart;
   if (_dup2(od, fd) == 0)
     ret = fd;
   else
     ret = -1;
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return ret;
 }
 
@@ -778,12 +778,12 @@ int __cdecl _fcloseall(void)
 {
   int num_closed = 0, i;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   for (i = 3; i < stream_idx; i++)
     if (fstreams[i] && fstreams[i]->_flag &&
         !fclose(fstreams[i]))
       num_closed++;
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
 
   TRACE(":closed (%d) handles\n",num_closed);
   return num_closed;
@@ -800,8 +800,8 @@ void msvcrt_free_io(void)
     fclose(&_iob[0]);
     fclose(&_iob[1]);
     fclose(&_iob[2]);
-    FILE_cs.DebugInfo->Flags = 0;
-    DeleteCriticalSection(&FILE_cs);
+//    FILE_cs.DebugInfo->Flags = 0;
+//    DeleteCriticalSection(&FILE_cs);
 }
 
 /*********************************************************************
@@ -949,7 +949,7 @@ int __cdecl _chsize(int fd, long size)
 
     TRACE("(fd=%d, size=%ld)\n", fd, size);
 
-    LOCK_FILES();
+    //LOCK_FILES();
 
     handle = fdtoh(fd);
     if (handle != INVALID_HANDLE_VALUE)
@@ -970,7 +970,7 @@ int __cdecl _chsize(int fd, long size)
         }
     }
 
-    UNLOCK_FILES();
+    //UNLOCK_FILES();
     return ret ? 0 : -1;
 }
 
@@ -1044,7 +1044,7 @@ FILE* __cdecl _fdopen(int fd, const char *mode)
 
   if (get_flags(mode, &open_flags, &stream_flags) == -1) return NULL;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   if (!(file = alloc_fp()))
     file = NULL;
   else if (init_fp(file, fd, stream_flags) == -1)
@@ -1053,7 +1053,7 @@ FILE* __cdecl _fdopen(int fd, const char *mode)
     file = NULL;
   }
   else TRACE(":fd (%d) mode (%s) FILE* (%p)\n",fd,mode,file);
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
 
   return file;
 }
@@ -1076,7 +1076,7 @@ FILE* __cdecl _wfdopen(int fd, const wchar_t *mode)
         free(modea);
         return NULL;
       }
-      LOCK_FILES();
+      //LOCK_FILES();
       if (!(file = alloc_fp()))
         file = NULL;
       else if (init_fp(file, fd, stream_flags) == -1)
@@ -1090,7 +1090,7 @@ FILE* __cdecl _wfdopen(int fd, const wchar_t *mode)
           rewind(file); /* FIXME: is this needed ??? */
         TRACE(":fd (%d) mode (%S) FILE* (%p)\n",fd,mode,file);
       }
-      UNLOCK_FILES();
+      //UNLOCK_FILES();
   }
   free(modea);
   return file;
@@ -1318,7 +1318,7 @@ int __cdecl _pipe(int *pfds, unsigned int psize, int textmode)
     unsigned int wxflags = split_oflags(textmode);
     int fd;
 
-    LOCK_FILES();
+    //LOCK_FILES();
     fd = alloc_fd(readHandle, wxflags);
     if (fd != -1)
     {
@@ -1342,7 +1342,7 @@ int __cdecl _pipe(int *pfds, unsigned int psize, int textmode)
       CloseHandle(writeHandle);
       //*_errno() = EMFILE;
     }
-    UNLOCK_FILES();
+    //UNLOCK_FILES();
   }
   //else
   //  _dosmaperr(GetLastError());
@@ -1561,14 +1561,14 @@ int __cdecl _rmtmp(void)
 {
   int num_removed = 0, i;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   for (i = 3; i < stream_idx; i++)
     if (fstreams[i] && fstreams[i]->_tmpfname)
     {
       fclose(fstreams[i]);
       num_removed++;
     }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
 
   if (num_removed)
     TRACE(":removed (%d) temp files\n",num_removed);
@@ -2233,7 +2233,7 @@ FILE * __cdecl _fsopen(const char *path, const char *mode, int share)
   if (get_flags(mode, &open_flags, &stream_flags) == -1)
       return NULL;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   fd = _sopen(path, open_flags, share, _S_IREAD | _S_IWRITE);
   if (fd < 0)
     file = NULL;
@@ -2249,7 +2249,7 @@ FILE * __cdecl _fsopen(const char *path, const char *mode, int share)
   TRACE(":got (%p)\n",file);
   if (fd >= 0 && !file)
     _close(fd);
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return file;
 }
 
@@ -2408,7 +2408,7 @@ FILE* __cdecl freopen(const char *path, const char *mode,FILE* file)
 
   TRACE(":path (%p) mode (%s) file (%p) fd (%d)\n",path,mode,file,file->_file);
 
-  LOCK_FILES();
+  //LOCK_FILES();
   if (!file || ((fd = file->_file) < 0) || fd > fdend)
     file = NULL;
   else
@@ -2431,7 +2431,7 @@ FILE* __cdecl freopen(const char *path, const char *mode,FILE* file)
       }
     }
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return file;
 }
 
@@ -2445,7 +2445,7 @@ FILE* __cdecl _wfreopen(const wchar_t *path, const wchar_t *mode,FILE* file)
 
   TRACE(":path (%S) mode (%S) file (%S) fd (%d)\n", path, mode, file, file->_file);
 
-  LOCK_FILES();
+  //LOCK_FILES();
   if (!file || ((fd = file->_file) < 0) || fd > fdend)
     file = NULL;
   else
@@ -2468,7 +2468,7 @@ FILE* __cdecl _wfreopen(const wchar_t *path, const wchar_t *mode,FILE* file)
       }
     }
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return file;
 }
 
@@ -2796,7 +2796,7 @@ FILE* __cdecl tmpfile(void)
   int fd;
   FILE* file = NULL;
 
-  LOCK_FILES();
+  //LOCK_FILES();
   fd = _open(filename, _O_CREAT | _O_BINARY | _O_RDWR | _O_TEMPORARY);
   if (fd != -1 && (file = alloc_fp()))
   {
@@ -2807,7 +2807,7 @@ FILE* __cdecl tmpfile(void)
     }
     else file->_tmpfname = _strdup(filename);
   }
-  UNLOCK_FILES();
+  //UNLOCK_FILES();
   return file;
 }
 

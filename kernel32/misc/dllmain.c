@@ -279,12 +279,6 @@ DllMain(HANDLE hDll,
 
     DPRINT("DllMain(hInst %lx, dwReason %lu)\n",
            hDll, dwReason);
-#if !defined(NDEBUG) && 0
-    __asm
-    {
-        int 3;
-    }
-#endif
     Basep8BitStringToUnicodeString = RtlAnsiStringToUnicodeString;
 
     /* Cache the PEB and Session ID */
