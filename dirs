@@ -1,6 +1,6 @@
 DIRS=\
+	cmd
+OPTIONAL_DIRS=\
 	kernel32\
 	mspack\
 	crt\
-	cmd
-
