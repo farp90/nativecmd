@@ -97,7 +97,7 @@ INT cmd_move (LPTSTR param)
 	INT nOverwrite = 0;
 	WIN32_FIND_DATA findBuffer;
 	HANDLE hFile;
-
+	
 	/* used only when source and destination  directories are on different volume*/
 	HANDLE hDestFile;
 	WIN32_FIND_DATA findDestBuffer;
@@ -106,7 +106,7 @@ INT cmd_move (LPTSTR param)
 	LPTSTR pszDestDirPointer;
 	LPTSTR pszSrcDirPointer;
 	INT nDirLevel = 0;
-
+	
 	LPTSTR pszFile;
 	BOOL OnlyOneFile;
 	BOOL FoundFile;
@@ -185,25 +185,25 @@ INT cmd_move (LPTSTR param)
 	{
 		dwMoveStatusFlags |= MOVE_SOURCE_HAS_WILD;
 	}
-
-
+	
+	
 	/* get destination */
 	GetFullPathName (pszDest, MAX_PATH, szDestPath, NULL);
-	TRACE ("Destination: %s\n", szDestPath);
-
+	TRACE ("Destination: %s\n", debugstr_aw(szDestPath));
+	
 	/* get source folder */
 	GetFullPathName(arg[i], MAX_PATH, szSrcDirPath, &pszFile);
 	if (pszFile != NULL)
 		*pszFile = _T('\0');
-	TRACE ("Source Folder: %s\n", szSrcDirPath);
-
+	TRACE ("Source Folder: %s\n", debugstr_aw(szSrcDirPath));
+	
 	hFile = FindFirstFile (arg[i], &findBuffer);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		ErrorMessage (GetLastError (), arg[i]);
 		freep (arg);
 		return 1;
-
+		
 	}
 
 	/* check for special cases "." and ".." and if found skip them */
@@ -212,7 +212,7 @@ INT cmd_move (LPTSTR param)
 		  (_tcscmp(findBuffer.cFileName,_T(".")) == 0 ||
 		   _tcscmp(findBuffer.cFileName,_T("..")) == 0))
 		FoundFile = FindNextFile (hFile, &findBuffer);
-
+	
 	if (!FoundFile)
 	{
 		/* what? we don't have anything to move? */
@@ -221,7 +221,7 @@ INT cmd_move (LPTSTR param)
 		freep(arg);
 		return 1;
 	}
-
+	
 	OnlyOneFile = TRUE;
 	/* check if there can be found files as files have first priority */
 	if (findBuffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -252,16 +252,16 @@ INT cmd_move (LPTSTR param)
 		ErrorMessage (GetLastError (), arg[i]);
 		freep (arg);
 		return 1;
-
+		
 	}
-
+	
 	/* check for special cases "." and ".." and if found skip them */
 	FoundFile = TRUE;
 	while(FoundFile &&
 		  (_tcscmp(findBuffer.cFileName,_T(".")) == 0 ||
 		   _tcscmp(findBuffer.cFileName,_T("..")) == 0))
 		FoundFile = FindNextFile (hFile, &findBuffer);
-
+	
 	if (!FoundFile)
 	{
 		/* huh? somebody removed files and/or folders which were there */
@@ -270,15 +270,15 @@ INT cmd_move (LPTSTR param)
 		freep(arg);
 		return 1;
 	}
-
+	
 	/* check if source and destination paths are on different volumes */
 	if (szSrcDirPath[0] != szDestPath[0])
 		dwMoveStatusFlags |= MOVE_PATHS_ON_DIF_VOL;
-
+	
 	/* move it */
 	do
 	{
-		TRACE ("Found file/directory: %s\n", findBuffer.cFileName);
+		TRACE ("Found file/directory: %s\n", debugstr_aw(findBuffer.cFileName));
 		nOverwrite = 1;
 		dwMoveFlags = 0;
 		dwMoveStatusFlags &= ~MOVE_DEST_IS_FILE &
@@ -290,56 +290,56 @@ INT cmd_move (LPTSTR param)
 			_tcscat (szFullSrcPath, _T("\\"));
 		_tcscat(szFullSrcPath,findBuffer.cFileName);
 		_tcscpy(szSrcPath, szFullSrcPath);
-
+		
 		if (IsExistingDirectory(szSrcPath))
 		{
 			/* source is directory */
-
+			
 			if (dwMoveStatusFlags & MOVE_SOURCE_IS_FILE)
 			{
 				dwMoveStatusFlags |= MOVE_SRC_CURRENT_IS_DIR; /* source is file but at the current round we found a directory */
 				continue;
 			}
-			TRACE ("Source is dir: %s\n", szSrcPath);
+			TRACE ("Source is dir: %s\n", debugstr_aw(szSrcPath));
 			dwMoveFlags = MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH | MOVEFILE_COPY_ALLOWED;
 		}
-
+		
 		/* if source is file we don't need to do anything special */
-
+		
 		if (IsExistingDirectory(szDestPath))
 		{
 			/* destination is existing directory */
-			TRACE ("Destination is directory: %s\n", szDestPath);
-
+			TRACE ("Destination is directory: %s\n", debugstr_aw(szDestPath));
+			
 			dwMoveStatusFlags |= MOVE_DEST_IS_DIR;
-
+			
 			/*build the dest string(accounts for *)*/
 			_tcscpy (szFullDestPath, szDestPath);
 			/*check to see if there is an ending slash, if not add one*/
 			if(szFullDestPath[_tcslen(szFullDestPath) -  1] != _T('\\'))
 				_tcscat (szFullDestPath, _T("\\"));
 			_tcscat (szFullDestPath, findBuffer.cFileName);
-
+			
 			if (IsExistingFile(szFullDestPath) || IsExistingDirectory(szFullDestPath))
 				dwMoveStatusFlags |= MOVE_DEST_EXISTS;
-
+			
 			dwMoveFlags |= MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH | MOVEFILE_COPY_ALLOWED;
-
+			
 		}
 		if (IsExistingFile(szDestPath))
 		{
 			/* destination is a file */
-			TRACE ("Destination is file: %s\n", szDestPath);
-
+			TRACE ("Destination is file: %s\n", debugstr_aw(szDestPath));
+			
 			dwMoveStatusFlags |= MOVE_DEST_IS_FILE | MOVE_DEST_EXISTS;
 			_tcscpy (szFullDestPath, szDestPath);
-
+			
 			dwMoveFlags |= MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH | MOVEFILE_COPY_ALLOWED;
-
+			
 		}
-
+		
 		TRACE ("Move Status Flags: 0x%X\n",dwMoveStatusFlags);
-
+		
 		if (dwMoveStatusFlags & MOVE_SOURCE_IS_DIR &&
 			dwMoveStatusFlags & MOVE_DEST_IS_DIR &&
 			dwMoveStatusFlags & MOVE_SOURCE_HAS_WILD)
@@ -350,17 +350,17 @@ INT cmd_move (LPTSTR param)
 			freep(arg);
 			return 1;
 		}
-
+			
 		if (!(dwMoveStatusFlags & (MOVE_DEST_IS_FILE | MOVE_DEST_IS_DIR)))
 		{
 			/* destination doesn't exist */
 			_tcscpy (szFullDestPath, szDestPath);
 			if (dwMoveStatusFlags & MOVE_SOURCE_IS_FILE) dwMoveStatusFlags |= MOVE_DEST_IS_FILE;
 			if (dwMoveStatusFlags & MOVE_SOURCE_IS_DIR) dwMoveStatusFlags |= MOVE_DEST_IS_DIR;
-
+			
 			dwMoveFlags |= MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH | MOVEFILE_COPY_ALLOWED;
 		}
-
+		
 		if (dwMoveStatusFlags & MOVE_SOURCE_IS_FILE &&
 			dwMoveStatusFlags & MOVE_DEST_IS_FILE &&
 			!OnlyOneFile)
@@ -371,7 +371,7 @@ INT cmd_move (LPTSTR param)
 			freep (arg);
 			return 1;
 		}
-
+		
 		/*checks to make sure user wanted/wants the override*/
 		if((dwFlags & MOVE_OVER_NO) &&
 		   (dwMoveStatusFlags & MOVE_DEST_EXISTS))
@@ -383,14 +383,14 @@ INT cmd_move (LPTSTR param)
 			continue;
 		if (nOverwrite == PROMPT_ALL)
 			dwFlags |= MOVE_OVER_YES;
-
-
+		
+			
 		ConOutPrintf (_T("%s => %s "), szSrcPath, szFullDestPath);
-
+		
 		/* are we really supposed to do something */
 		if (dwFlags & MOVE_NOTHING)
 			continue;
-
+		
 		/*move the file*/
 		if (!(dwMoveStatusFlags & MOVE_SOURCE_IS_DIR &&
 			dwMoveStatusFlags & MOVE_PATHS_ON_DIF_VOL))
@@ -424,7 +424,7 @@ INT cmd_move (LPTSTR param)
 							FirstTime = FALSE;
 						else
 							FoundFile = FindNextFile (hDestFile, &findDestBuffer);
-
+						
 						if (!FoundFile)
 						{	/* Nothing to do in this folder so we stop working on it */
 							FindClose(hDestFile);
@@ -467,12 +467,12 @@ INT cmd_move (LPTSTR param)
 							}
 							continue;
 						}
-
+						
 						/* if we find "." or ".." we'll skip them */
 						if (_tcscmp(findDestBuffer.cFileName,_T(".")) == 0 ||
 							_tcscmp(findDestBuffer.cFileName,_T("..")) == 0)
 							continue;
-
+					
 						_tcscpy(pszSrcDirPointer, findDestBuffer.cFileName);
 						_tcscpy(pszDestDirPointer, findDestBuffer.cFileName);
 						if (IsExistingFile(szMoveSrc))
@@ -512,7 +512,7 @@ INT cmd_move (LPTSTR param)
 			!(dwMoveStatusFlags & MOVE_SOURCE_IS_DIR) &&
 			FindNextFile (hFile, &findBuffer));
 	FindClose (hFile);
-
+	
 	freep (arg);
 	return 0;
 }

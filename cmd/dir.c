@@ -680,10 +680,10 @@ FormatTime(TCHAR *lpTime, LPSYSTEMTIME dt)
 	{
 		case 0: /* 12 hour format */
 		default:
-			return _stprintf(lpTime,_T("%02d%c%02u %cM"),
+			return _stprintf(lpTime,_T("%02d%c%02u%c"),
 					(dt->wHour == 0 ? 12 : (dt->wHour <= 12 ? dt->wHour : dt->wHour - 12)),
 					cTimeSeparator,
-					 dt->wMinute, (dt->wHour <= 11 ? _T('A') : _T('P')));
+					 dt->wMinute, (dt->wHour <= 11 ? _T('a') : _T('p')));
 			break;
 
 		case 1: /* 24 hour format */
@@ -699,7 +699,7 @@ GetUserDiskFreeSpace(LPCTSTR lpRoot,
 		     PULARGE_INTEGER lpFreeSpace)
 {
   PGETFREEDISKSPACEEX pGetFreeDiskSpaceEx;
-//  HINSTANCE hInstance;
+  HINSTANCE hInstance;
   DWORD dwSecPerCl;
   DWORD dwBytPerSec;
   DWORD dwFreeCl;
@@ -708,21 +708,21 @@ GetUserDiskFreeSpace(LPCTSTR lpRoot,
 
   lpFreeSpace->QuadPart = 0;
 
-//  hInstance = GetModuleHandle(_T("KERNEL32"));
-//  if (hInstance != NULL)
-//    {
-//      pGetFreeDiskSpaceEx = (PGETFREEDISKSPACEEX)GetProcAddress(hInstance,
-//#ifdef _UNICODE
-//					                        "GetDiskFreeSpaceExW");
-//#else
-//				                                "GetDiskFreeSpaceExA");
-//#endif
-//      if (pGetFreeDiskSpaceEx != NULL)
-//	{
-	  if (GetDiskFreeSpaceEx(lpRoot, lpFreeSpace, &TotalNumberOfBytes, &TotalNumberOfFreeBytes) == TRUE)
+  hInstance = GetModuleHandle(_T("KERNEL32"));
+  if (hInstance != NULL)
+    {
+      pGetFreeDiskSpaceEx = (PGETFREEDISKSPACEEX)GetProcAddress(hInstance,
+#ifdef _UNICODE
+					                        "GetDiskFreeSpaceExW");
+#else
+				                                "GetDiskFreeSpaceExA");
+#endif
+      if (pGetFreeDiskSpaceEx != NULL)
+	{
+	  if (pGetFreeDiskSpaceEx(lpRoot, lpFreeSpace, &TotalNumberOfBytes, &TotalNumberOfFreeBytes) == TRUE)
 	    return;
-//	}
- //   }
+	}
+    }
 
   GetDiskFreeSpace(lpRoot,
 		   &dwSecPerCl,
@@ -1303,7 +1303,7 @@ QsortFiles(LPWIN32_FIND_DATA ptrArray[],	/* [IN/OUT] The array with file info po
 static INT
 DirList(LPTSTR szPath,			/* [IN] The path that dir starts */
 		LPDIRSWITCHFLAGS lpFlags)	/* [IN] The flags of the listing */
-{
+{	
 	BOOL fPoint;							/* If szPath is a file with extension fPoint will be True*/
 	HANDLE hSearch;							/* The handle of the search */
 	HANDLE hRecSearch;						/* The handle for searching recursivly */
@@ -1638,7 +1638,7 @@ CommandDir(LPTSTR rest)
 		TRACE("(S) Recursive : %i\n", stFlags.bRecursive );
 		TRACE("(T) Time field : %i\n", stFlags.stTimeField.eTimeField );
 		TRACE("(X) Short names : %i\n", stFlags.bShortName );
-		TRACE("Parameter : %s\n", params[loop] );
+		TRACE("Parameter : %s\n", debugstr_aw(params[loop]) );
 	}
 
 		/* Print the drive header if the volume changed */

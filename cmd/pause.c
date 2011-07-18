@@ -37,7 +37,7 @@
 INT cmd_pause (LPTSTR param)
 {
 
-	TRACE ("cmd_pause: \'%s\')\n", param);
+	TRACE ("cmd_pause: \'%s\')\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{

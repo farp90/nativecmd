@@ -216,8 +216,6 @@ INT  CommandEchos (LPTSTR);
 INT  CommandEchoerr (LPTSTR);
 INT  CommandEchoserr (LPTSTR);
 
-/* Prototypes for EXPAND.C */
-INT  CommandExpand (LPTSTR);
 
 /* Prototypes for ERROR.C */
 VOID ErrorMessage (DWORD, LPTSTR, ...);

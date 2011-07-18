@@ -26,7 +26,7 @@
 #include <ndk/ntndk.h>
 /* CSRSS not run now, so we do not usr csr function*/
 /* CSRSS Header */
-//#include <csrss/csrss.h>
+#include <csrss/csrss.h>
 
 /* C Headers */
 #include <ctype.h>
@@ -46,7 +46,5 @@
 #include <pseh/pseh2.h>
 /* we define debug channel here, maybe we do not need to define it by modify debug code*/
 DEBUG_CHANNEL(kernel32file);
-#if (WINVER < 0x0600)
 #include "k32fix.h"
-#endif
 #endif

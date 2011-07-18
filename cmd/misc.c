@@ -38,50 +38,48 @@
 /*
  * get a character out-of-band and honor Ctrl-Break characters
  */
-CHAR GetChar(VOID);
 TCHAR
 cgetchar (VOID)
 {
-    return (TCHAR) GetChar();
-//	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
-//	INPUT_RECORD irBuffer;
-//	DWORD  dwRead;
-//
-//	do
-//	{
-//		ReadConsoleInput (hInput, &irBuffer, 1, &dwRead);
-//		if ((irBuffer.EventType == KEY_EVENT) &&
-//			(irBuffer.Event.KeyEvent.bKeyDown == TRUE))
-//		{
-//			if (irBuffer.Event.KeyEvent.dwControlKeyState &
-//				 (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))
-//			{
-//				if (irBuffer.Event.KeyEvent.wVirtualKeyCode == 'C')
-//				{
-//					bCtrlBreak = TRUE;
-//					break;
-//				}
-//			}
-//			else if ((irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
-//	       (irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
-//	       (irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL))
-//			{
-//				;
-//			}
-//
-//			else
-//			{
-//				break;
-//			}
-// 		}
-// 	}
-// 	while (TRUE);
-//
-//#ifndef _UNICODE
-//	return irBuffer.Event.KeyEvent.uChar.AsciiChar;
-//#else
-//	return irBuffer.Event.KeyEvent.uChar.UnicodeChar;
-//#endif /* _UNICODE */
+	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
+	INPUT_RECORD irBuffer;
+	DWORD  dwRead;
+
+	do
+	{
+		ReadConsoleInput (hInput, &irBuffer, 1, &dwRead);
+		if ((irBuffer.EventType == KEY_EVENT) &&
+			(irBuffer.Event.KeyEvent.bKeyDown == TRUE))
+		{
+			if (irBuffer.Event.KeyEvent.dwControlKeyState &
+				 (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))
+			{
+				if (irBuffer.Event.KeyEvent.wVirtualKeyCode == 'C')
+				{
+					bCtrlBreak = TRUE;
+					break;
+				}
+			}
+			else if ((irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
+	       (irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
+	       (irBuffer.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL))
+			{
+				;
+			}
+
+			else
+			{
+				break;
+			}
+ 		}
+ 	}
+ 	while (TRUE);
+
+#ifndef _UNICODE
+	return irBuffer.Event.KeyEvent.uChar.AsciiChar;
+#else
+	return irBuffer.Event.KeyEvent.uChar.UnicodeChar;
+#endif /* _UNICODE */
 }
 
 /*
@@ -153,7 +151,7 @@ BOOL CheckCtrlBreak (INT mode)
 			if (!bCtrlBreak)
 				return FALSE;
 
-			(CMD_ModuleHandle, STRING_COPY_OPTION, options, 4);
+			LoadString(CMD_ModuleHandle, STRING_COPY_OPTION, options, 4);
 
 			/* we need to be sure the string arrives on the screen! */
 			do
@@ -527,32 +525,31 @@ BOOL FileGetString (HANDLE hFile, LPTSTR lpBuffer, INT nBufferLength)
 #endif
 	return TRUE;
 }
-int GetScanCode(VOID);
+
 INT PagePrompt (VOID)
 {
-//	INPUT_RECORD ir;
+	INPUT_RECORD ir;
+
 	ConOutResPuts(STRING_MISC_HELP1);
 
-	//RemoveBreakHandler ();
-//	ConInDisable ();
-//
-//	do
-//	{
-//		ConInKey (&ir);
-//	}
-//	while ((ir.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
-//	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
-//	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
-//
-//	//AddBreakHandler ();
-//	ConInEnable ();
+	RemoveBreakHandler ();
+	ConInDisable ();
 
-//	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||
-//	    ((ir.Event.KeyEvent.wVirtualKeyCode == _T('C')) &&
-//	     (ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))))
-//	{
-    if(GetScanCode() == 1)
-    {
+	do
+	{
+		ConInKey (&ir);
+	}
+	while ((ir.Event.KeyEvent.wVirtualKeyCode == VK_SHIFT) ||
+	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
+	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
+
+	AddBreakHandler ();
+	ConInEnable ();
+
+	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||
+	    ((ir.Event.KeyEvent.wVirtualKeyCode == _T('C')) &&
+	     (ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))))
+	{
 		bCtrlBreak = TRUE;
 		return PROMPT_BREAK;
 	}
@@ -597,7 +594,7 @@ INT FilePromptYN (UINT resID)
 
 	/* unfinished sollution */
 #if 0
-	//RemoveBreakHandler ();
+	RemoveBreakHandler ();
 	ConInDisable ();
 
 	do
@@ -613,7 +610,7 @@ INT FilePromptYN (UINT resID)
 	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
 	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
 
-	//AddBreakHandler ();
+	AddBreakHandler ();
 	ConInEnable ();
 
 	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||
@@ -665,7 +662,7 @@ INT FilePromptYNA (UINT resID)
 
 /* unfinished sollution */
 #if 0
-	//RemoveBreakHandler ();
+	RemoveBreakHandler ();
 	ConInDisable ();
 
 	do
@@ -679,7 +676,7 @@ INT FilePromptYNA (UINT resID)
 	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_MENU) ||
 	       (ir.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL));
 
-	//AddBreakHandler ();
+	AddBreakHandler ();
 	ConInEnable ();
 
 	if ((ir.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) ||

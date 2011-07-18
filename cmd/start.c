@@ -241,11 +241,11 @@ INT cmd_start (LPTSTR Rest)
 		{
 			bBat = TRUE;
 			_stprintf(szFullCmdLine, _T("\"%s\" /K %s"), comspec, Rest);
-			TRACE ("[BATCH: %s %s]\n", szFullName, Rest);
+			TRACE ("[BATCH: %s %s]\n", debugstr_aw(szFullName), debugstr_aw(Rest));
 		}
 		else
 		{
-			TRACE ("[EXEC: %s %s]\n", szFullName, Rest);
+			TRACE ("[EXEC: %s %s]\n", debugstr_aw(szFullName), debugstr_aw(Rest));
 			_tcscpy(szFullCmdLine, szFullName);
 		}
 

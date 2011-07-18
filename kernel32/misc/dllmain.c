@@ -23,7 +23,8 @@ extern UNICODE_STRING SystemDirectory;
 extern UNICODE_STRING WindowsDirectory;
 extern UNICODE_STRING BaseDefaultPath;
 extern UNICODE_STRING BaseDefaultPathAppend;
-
+extern BOOL RegInitialize(VOID);
+extern BOOL RegCleanup(VOID);
 WCHAR BaseDefaultPathBuffer[6140];
 
 HANDLE hProcessHeap = NULL;
@@ -256,6 +257,7 @@ BasepInitConsole(VOID)
     {
         Parameters->StandardError = (HANDLE)0xB;
     }
+    AllocConsole();
     DPRINT("Console setup: %lx, %lx, %lx, %lx\n",
             Parameters->ConsoleHandle,
             Parameters->StandardInput,
@@ -288,7 +290,7 @@ DllMain(HANDLE hDll,
     switch (dwReason)
     {
         case DLL_PROCESS_ATTACH:
-
+        RegInitialize();
         /* Don't bother us for each thread */
         LdrDisableThreadCalloutsForDll((PVOID)hDll);
 
@@ -416,7 +418,7 @@ DllMain(HANDLE hDll,
         break;
 
         case DLL_PROCESS_DETACH:
-
+            RegCleanup();
             DPRINT("DLL_PROCESS_DETACH\n");
             if (DllInitialized == TRUE)
             {

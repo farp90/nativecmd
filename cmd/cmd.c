@@ -147,9 +147,9 @@
 #define NT_SUCCESS(StatCode)  ((NTSTATUS)(StatCode) >= 0)
 #endif
 
-//typedef NTSTATUS (WINAPI *NtQueryInformationProcessProc)(HANDLE, PROCESSINFOCLASS,
-//                                                          PVOID, ULONG, PULONG);
-//typedef NTSTATUS (WINAPI *NtReadVirtualMemoryProc)(HANDLE, PVOID, PVOID, ULONG, PULONG);
+typedef NTSTATUS (WINAPI *NtQueryInformationProcessProc)(HANDLE, PROCESSINFOCLASS,
+                                                          PVOID, ULONG, PULONG);
+typedef NTSTATUS (WINAPI *NtReadVirtualMemoryProc)(HANDLE, PVOID, PVOID, ULONG, PULONG);
 
 BOOL bExit = FALSE;       /* indicates EXIT was typed */
 BOOL bCanExit = TRUE;     /* indicates if this shell is exitable */
@@ -167,8 +167,8 @@ HANDLE hOut;
 LPTSTR lpOriginalEnvironment;
 HANDLE CMD_ModuleHandle;
 
-//static NtQueryInformationProcessProc NtQueryInformationProcess = NULL;
-//static NtReadVirtualMemoryProc       NtReadVirtualMemory = NULL;
+static NtQueryInformationProcessProc NtQueryInformationProcessPtr = NULL;
+static NtReadVirtualMemoryProc       NtReadVirtualMemoryPtr = NULL;
 
 #ifdef INCLUDE_CMD_COLOR
 WORD wDefColor;           /* default color */
@@ -222,12 +222,12 @@ static BOOL IsConsoleProcess(HANDLE Process)
 	PEB ProcessPeb;
 	ULONG BytesRead;
 
-//	if (NULL == NtQueryInformationProcess || NULL == NtReadVirtualMemory)
-//	{
-//		return TRUE;
-//	}
+	if (NULL == NtQueryInformationProcessPtr || NULL == NtReadVirtualMemoryPtr)
+	{
+		return TRUE;
+	}
 
-	Status = NtQueryInformationProcess (
+	Status = NtQueryInformationProcessPtr (
 		Process, ProcessBasicInformation,
 		&Info, sizeof(PROCESS_BASIC_INFORMATION), NULL);
 	if (! NT_SUCCESS(Status))
@@ -235,7 +235,7 @@ static BOOL IsConsoleProcess(HANDLE Process)
 		WARN ("NtQueryInformationProcess failed with status %08x\n", Status);
 		return TRUE;
 	}
-	Status = NtReadVirtualMemory (
+	Status = NtReadVirtualMemoryPtr (
 		Process, Info.PebBaseAddress, &ProcessPeb,
 		sizeof(PEB), &BytesRead);
 	if (! NT_SUCCESS(Status) || sizeof(PEB) != BytesRead)
@@ -247,7 +247,7 @@ static BOOL IsConsoleProcess(HANDLE Process)
 	return IMAGE_SUBSYSTEM_NATIVE == ProcessPeb.ImageSubsystem;
 }
 
-#if 0
+
 
 #ifdef _UNICODE
 #define SHELLEXECUTETEXT   	"ShellExecuteExW"
@@ -265,7 +265,7 @@ HANDLE RunFile(DWORD flags, LPTSTR filename, LPTSTR params,
 	MYEX        hShExt;
 	BOOL        ret;
 
-	TRACE ("RunFile(%s)\n", filename);
+	TRACE ("RunFile(%s)\n", debugstr_aw(filename));
 	hShell32 = LoadLibrary(_T("SHELL32.DLL"));
 	if (!hShell32)
 	{
@@ -297,7 +297,7 @@ HANDLE RunFile(DWORD flags, LPTSTR filename, LPTSTR params,
 	FreeLibrary(hShell32);
 	return ret ? sei.hProcess : NULL;
 }
-#endif
+
 
 
 /*
@@ -318,8 +318,8 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 	TCHAR *FirstEnd;
 	TCHAR szFullCmdLine [CMDLINE_LENGTH];
 
-	TRACE ("Execute: \'%s\' \'%s\'\n", First, Rest);
-
+	TRACE ("Execute: \'%s\' \'%s\'\n", debugstr_aw(First), debugstr_aw(Rest));
+BREAK_POINT
 	/* Though it was already parsed once, we have a different set of rules
 	   for parsing before we pass to CreateProccess */
 	if (First[0] == _T('/') || (First[0] && First[1] == _T(':')))
@@ -376,7 +376,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		return 1;
 	}
 
-	//GetConsoleTitle (szWindowTitle, MAX_PATH);
+	GetConsoleTitle (szWindowTitle, MAX_PATH);
 
 	/* check if this is a .BAT or .CMD file */
 	dot = _tcsrchr (szFullName, _T('.'));
@@ -384,7 +384,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 	{
 		while (*rest == _T(' '))
 			rest++;
-		TRACE ("[BATCH: %s %s]\n", szFullName, rest);
+		TRACE ("[BATCH: %s %s]\n", debugstr_aw(szFullName), debugstr_aw(rest));
 		dwExitCode = Batch(szFullName, first, rest, Cmd);
 	}
 	else
@@ -402,7 +402,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 			_tcsncat(szFullCmdLine, rest, CMDLINE_LENGTH - _tcslen(szFullCmdLine));
 		}
 
-		TRACE ("[EXEC: %s]\n", szFullCmdLine);
+		TRACE ("[EXEC: %s]\n", debugstr_aw(szFullCmdLine));
 
 		/* fill startup info */
 		memset (&stui, 0, sizeof (STARTUPINFO));
@@ -411,8 +411,9 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		stui.wShowWindow = SW_SHOWDEFAULT;
 
 		// return console to standard mode
-		//SetConsoleMode (GetStdHandle(STD_INPUT_HANDLE),
-		//                ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
+		SetConsoleMode (GetStdHandle(STD_INPUT_HANDLE),
+		                ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
+
 		if (CreateProcess (szFullName,
 		                   szFullCmdLine,
 		                   NULL,
@@ -423,10 +424,10 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		                   NULL,
 		                   &stui,
 		                   &prci))
+
 		{
 			CloseHandle(prci.hThread);
 		}
-#if 0
 		else
 		{
 			// See if we can run this with ShellExecute() ie myfile.xls
@@ -436,7 +437,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 			                        NULL,
 			                        SW_SHOWNORMAL);
 		}
-#endif
+
 		if (prci.hProcess != NULL)
 		{
 			if (IsConsoleProcess(prci.hProcess))
@@ -455,21 +456,21 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 		}
 		else
 		{
-			TRACE ("[ShellExecute failed!: %s]\n", Full);
+			TRACE ("[ShellExecute failed!: %s]\n", debugstr_aw(Full));
 			error_bad_command (first);
 			dwExitCode = 1;
 		}
 
 		// restore console mode
-		//SetConsoleMode (
-		//	GetStdHandle( STD_INPUT_HANDLE ),
-		//	ENABLE_PROCESSED_INPUT );
+		SetConsoleMode (
+			GetStdHandle( STD_INPUT_HANDLE ),
+			ENABLE_PROCESSED_INPUT );
 	}
 
 	/* Get code page if it has been change */
 	InputCodePage= GetConsoleCP();
 	OutputCodePage = GetConsoleOutputCP();
-	//SetConsoleTitle (szWindowTitle);
+	SetConsoleTitle (szWindowTitle);
 
 	return dwExitCode;
 }
@@ -495,7 +496,7 @@ DoCommand(LPTSTR first, LPTSTR rest, PARSED_COMMAND *Cmd)
 	BOOL nointernal = FALSE;
 	INT ret;
 
-	TRACE ("DoCommand: (\'%s\' \'%s\')\n", first, rest);
+	TRACE ("DoCommand: (\'%s\' \'%s\')\n", debugstr_aw(first), debugstr_aw(rest));
 
 	/* full command line */
 	com = cmd_alloc((_tcslen(first) + _tcslen(rest) + 2) * sizeof(TCHAR));
@@ -1417,7 +1418,7 @@ ProcessInput()
 	}
 }
 
-#if 0
+
 /*
  * control-break handler.
  */
@@ -1445,7 +1446,7 @@ BOOL WINAPI BreakHandler (DWORD dwCtrlType)
 	if (!TryEnterCriticalSection(&ChildProcessRunningLock))
 	{
 		SelfGenerated = TRUE;
-		//GenerateConsoleCtrlEvent (dwCtrlType, 0);
+		GenerateConsoleCtrlEvent (dwCtrlType, 0);
 		return TRUE;
 	}
 	else
@@ -1462,11 +1463,11 @@ BOOL WINAPI BreakHandler (DWORD dwCtrlType)
     rec.Event.KeyEvent.uChar.UnicodeChar = _T('C');
     rec.Event.KeyEvent.dwControlKeyState = RIGHT_CTRL_PRESSED;
 
-    //WriteConsoleInput(
-    //    hIn,
-    //    &rec,
-    //    1,
-	//	&dwWritten);
+    WriteConsoleInput(
+        hIn,
+        &rec,
+        1,
+		&dwWritten);
 
 	bCtrlBreak = TRUE;
 	/* FIXME: Handle batch files */
@@ -1494,7 +1495,7 @@ VOID RemoveBreakHandler (VOID)
  * show commands and options that are available.
  *
  */
-
+#if 0
 static VOID
 ShowCommands (VOID)
 {
@@ -1503,7 +1504,7 @@ ShowCommands (VOID)
 	PrintCommandList();
 
 	/* print feature list */
-//	ConOutResPuts(STRING_CMD_HELP2);
+	ConOutResPuts(STRING_CMD_HELP2);
 
 #ifdef FEATURE_ALIASES
 	ConOutResPuts(STRING_CMD_HELP3);
@@ -1524,32 +1525,32 @@ ShowCommands (VOID)
 }
 #endif
 
-//static VOID
-//ExecuteAutoRunFile(HKEY hkeyRoot)
-//{
-//	TCHAR autorun[2048];
-//	DWORD len = sizeof autorun;
-//	HKEY hkey;
-//
-//    if (RegOpenKeyEx(hkeyRoot,
-//                    _T("SOFTWARE\\Microsoft\\Command Processor"),
-//                    0,
-//                    KEY_READ,
-//                    &hkey ) == ERROR_SUCCESS)
-//    {
-//	    if(RegQueryValueEx(hkey,
-//                           _T("AutoRun"),
-//                           0,
-//                           0,
-//                           (LPBYTE)autorun,
-//                           &len) == ERROR_SUCCESS)
-//	    {
-//			if (*autorun)
-//				ParseCommandLine(autorun);
-//	    }
-//	    RegCloseKey(hkey);
-//    }
-//}
+static VOID
+ExecuteAutoRunFile(HKEY hkeyRoot)
+{
+	TCHAR autorun[2048];
+	DWORD len = sizeof autorun;
+	HKEY hkey;
+
+    if (RegOpenKeyEx(hkeyRoot,
+                    _T("SOFTWARE\\Microsoft\\Command Processor"),
+                    0,
+                    KEY_READ,
+                    &hkey ) == ERROR_SUCCESS)
+    {
+	    if(RegQueryValueEx(hkey,
+                           _T("AutoRun"),
+                           0,
+                           0,
+                           (LPBYTE)autorun,
+                           &len) == ERROR_SUCCESS)
+	    {
+			if (*autorun)
+				ParseCommandLine(autorun);
+	    }
+	    RegCloseKey(hkey);
+    }
+}
 
 /* Get the command that comes after a /C or /K switch */
 static VOID
@@ -1628,18 +1629,18 @@ Initialize()
 	/* Some people like to run ReactOS cmd.exe on Win98, it helps in the
 	 * build process. So don't link implicitly against ntdll.dll, load it
 	 * dynamically instead */
-//	NtDllModule = GetModuleHandle(TEXT("ntdll.dll"));
-//	if (NtDllModule != NULL)
-//	{
-//		NtQueryInformationProcess = (NtQueryInformationProcessProc)GetProcAddress(NtDllModule, "NtQueryInformationProcess");
-//		NtReadVirtualMemory = (NtReadVirtualMemoryProc)GetProcAddress(NtDllModule, "NtReadVirtualMemory");
-//	}
+	NtDllModule = GetModuleHandle(TEXT("ntdll.dll"));
+	if (NtDllModule != NULL)
+	{
+		NtQueryInformationProcessPtr = (NtQueryInformationProcessProc)GetProcAddress(NtDllModule, "NtQueryInformationProcess");
+		NtReadVirtualMemoryPtr = (NtReadVirtualMemoryProc)GetProcAddress(NtDllModule, "NtReadVirtualMemory");
+	}
 
 	InitLocale ();
 
 	/* get default input and output console handles */
-	//hOut = GetStdHandle (STD_OUTPUT_HANDLE);
-	//hIn  = GetStdHandle (STD_INPUT_HANDLE);
+	hOut = GetStdHandle (STD_OUTPUT_HANDLE);
+	hIn  = GetStdHandle (STD_INPUT_HANDLE);
 
 	/* Set EnvironmentVariable PROMPT if it does not exists any env value.
 	   for you can change the EnvirommentVariable for prompt before cmd start
@@ -1662,24 +1663,17 @@ Initialize()
 	if (0 != GetModuleFileName (NULL, ModuleName, _MAX_PATH + 1))
 	{
 		ModuleName[_MAX_PATH] = _T('\0');
-		if (_tcsncmp(_T("\\??\\"), ModuleName, 4))
-		{
-			SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
-		}
-		else
-		{
-			SetEnvironmentVariable (_T("COMSPEC"), &ModuleName[4]);
-		}
+		SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
 	}
 
 	/* add ctrl break handler */
-	//AddBreakHandler ();
+	AddBreakHandler ();
 
 
-	//SetConsoleMode (hIn, ENABLE_PROCESSED_INPUT);
+	SetConsoleMode (hIn, ENABLE_PROCESSED_INPUT);
 
 	cmdLine = GetCommandLine();
-	TRACE ("[command args: %s]\n", cmdLine);
+	TRACE ("[command args: %s]\n", debugstr_aw(cmdLine));
 
 	for (ptr = cmdLine; *ptr; ptr++)
 	{
@@ -1735,8 +1729,8 @@ Initialize()
 			else if (!_tcsnicmp(ptr, _T("/T:"), 3))
 			{
 				/* process /t (color) argument */
-				//wDefColor = (WORD)_tcstoul(&ptr[3], &ptr, 16);
-				//SetScreenColor(wDefColor, TRUE);
+				wDefColor = (WORD)_tcstoul(&ptr[3], &ptr, 16);
+				SetScreenColor(wDefColor, TRUE);
 			}
 #endif
 			else if (option == _T('U'))
@@ -1753,15 +1747,17 @@ Initialize()
 	if (!*ptr)
 	{
 		/* If neither /C or /K was given, display a simple version string */
-        ShortVersion();
-		ConOutPuts(_T("(C) Copyright 2011-") _T(COPYRIGHT_YEAR) _T(" Native Cmd Team."));
+		ConOutResPrintf(STRING_REACTOS_VERSION,
+			_T(KERNEL_RELEASE_STR),
+			_T(KERNEL_VERSION_BUILD_STR));
+		ConOutPuts(_T("(C) Copyright 1998-") _T(COPYRIGHT_YEAR) _T(" ReactOS Team."));
 	}
 
-//	if (AutoRun)
-//	{
-//		ExecuteAutoRunFile(HKEY_LOCAL_MACHINE);
-//		ExecuteAutoRunFile(HKEY_CURRENT_USER);
-//	}
+	if (AutoRun)
+	{
+		ExecuteAutoRunFile(HKEY_LOCAL_MACHINE);
+		ExecuteAutoRunFile(HKEY_CURRENT_USER);
+	}
 
 	if (*ptr)
 	{
@@ -1805,9 +1801,9 @@ static VOID Cleanup()
 	GetEnvVar(NULL);
 
 	/* remove ctrl break handler */
-	//RemoveBreakHandler ();
-	//SetConsoleMode( GetStdHandle( STD_INPUT_HANDLE ),
-	//		ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
+	RemoveBreakHandler ();
+	SetConsoleMode( GetStdHandle( STD_INPUT_HANDLE ),
+			ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_ECHO_INPUT );
 	DeleteCriticalSection(&ChildProcessRunningLock);
 }
 
@@ -1819,7 +1815,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	HANDLE hConsole;
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
-    DbgPrint("!!!Native Shell START\n");
+BREAK_POINT
 	InitializeCriticalSection(&ChildProcessRunningLock);
 	lpOriginalEnvironment = DuplicateEnvironment();
 
@@ -1830,19 +1826,21 @@ int cmd_main (int argc, const TCHAR *argv[])
 	InputCodePage= 0;
 	OutputCodePage = 0;
 
-//	hConsole = CreateFile(_T("CONOUT$"), GENERIC_READ|GENERIC_WRITE,
-//		FILE_SHARE_READ|FILE_SHARE_WRITE, NULL,
-//		OPEN_EXISTING, 0, NULL);
-//	if (hConsole != INVALID_HANDLE_VALUE)
-//	{
-//		if (!GetConsoleScreenBufferInfo(hConsole, &Info))
-//		{
-//			ConErrFormatMessage(GetLastError());
-//			return(1);
-//		}
-//		//wDefColor = Info.wAttributes;
-//		CloseHandle(hConsole);
-//	}
+	hConsole = CreateFile(_T("CONOUT$"), GENERIC_READ|GENERIC_WRITE,
+		FILE_SHARE_READ|FILE_SHARE_WRITE, NULL,
+		OPEN_EXISTING, 0, NULL);
+	if (hConsole != INVALID_HANDLE_VALUE)
+	{
+		if (!GetConsoleScreenBufferInfo(hConsole, &Info))
+		{
+			ConErrFormatMessage(GetLastError());
+			return(1);
+		}
+#ifdef INCLUDE_CMD_COLOR
+		wDefColor = Info.wAttributes;
+#endif
+		CloseHandle(hConsole);
+	}
 
 	InputCodePage= GetConsoleCP();
 	OutputCodePage = GetConsoleOutputCP();
@@ -1858,7 +1856,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	Cleanup();
 
 	cmd_free(lpOriginalEnvironment);
-    DbgPrint("!!!Native Shell Exit\n");
+
 	cmd_exit(nErrorLevel);
 	return(nErrorLevel);
 }

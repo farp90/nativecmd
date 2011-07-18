@@ -41,7 +41,7 @@ INT cmd_call (LPTSTR param)
 	TCHAR *first;
 	BOOL bInQuote = FALSE;
 
-	TRACE ("cmd_call: (\'%s\')\n", param);
+	TRACE ("cmd_call: (\'%s\')\n", debugstr_aw(param));
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
 		ConOutResPaging(TRUE,STRING_CALL_HELP);

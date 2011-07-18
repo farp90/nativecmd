@@ -37,11 +37,11 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 		} DUMMYUNIONNAME;
 	} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
 
-//	HMODULE hNTDLL = GetModuleHandle(_T("NTDLL"));
-//	BOOLEAN (WINAPI *RtlDosPathNameToNtPathName_U)(PCWSTR, PUNICODE_STRING, PCWSTR *, CURDIR *)
-//		= (BOOLEAN (WINAPI *)(PCWSTR, PUNICODE_STRING, PCWSTR *, CURDIR *))GetProcAddress(hNTDLL, "RtlDosPathNameToNtPathName_U");
-//	VOID (WINAPI *RtlFreeUnicodeString)(PUNICODE_STRING)
-//		= (VOID (WINAPI *)(PUNICODE_STRING))GetProcAddress(hNTDLL, "RtlFreeUnicodeString");
+	HMODULE hNTDLL = GetModuleHandle(_T("NTDLL"));
+	BOOLEAN (WINAPI *RtlDosPathNameToNtPathName_U)(PCWSTR, PUNICODE_STRING, PCWSTR *, CURDIR *)
+		= (BOOLEAN (WINAPI *)(PCWSTR, PUNICODE_STRING, PCWSTR *, CURDIR *))GetProcAddress(hNTDLL, "RtlDosPathNameToNtPathName_U");
+	VOID (WINAPI *RtlFreeUnicodeString)(PUNICODE_STRING)
+		= (VOID (WINAPI *)(PUNICODE_STRING))GetProcAddress(hNTDLL, "RtlFreeUnicodeString");
 
 	TCHAR TargetFullPath[MAX_PATH];
 #ifdef UNICODE
@@ -56,8 +56,8 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 	 * The first ("SubstituteName") is the full target path in NT format,
 	 * the second ("PrintName") is the full target path in Win32 format.
 	 * Both of these must be wide-character strings. */
-	if (/*!RtlDosPathNameToNtPathName_U ||
-	    !RtlFreeUnicodeString ||*/
+	if (!RtlDosPathNameToNtPathName_U ||
+	    !RtlFreeUnicodeString ||
 	    !GetFullPathName(TargetName, MAX_PATH, TargetFullPath, NULL) ||
 #ifndef UNICODE
 	    !MultiByteToWideChar(CP_ACP, 0, TargetFullPath, -1, TargetFullPathW, -1) ||
@@ -85,7 +85,7 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 		DWORD DataSize = FIELD_OFFSET(REPARSE_DATA_BUFFER, MountPointReparseBuffer.PathBuffer)
 		                 + TargetNTPath.Length + sizeof(WCHAR)
 		                 + TargetLen           + sizeof(WCHAR);
-		PREPARSE_DATA_BUFFER Data = cmd_alloc(DataSize);
+		PREPARSE_DATA_BUFFER Data = _alloca(DataSize);
 
 		/* Fill it out and use it to turn the directory into a reparse point */
 		Data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
@@ -104,12 +104,10 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 		                    Data, DataSize, NULL, 0, &DataSize, NULL))
 		{
 			/* Success */
-            cmd_free(Data);
 			CloseHandle(hJunction);
 			RtlFreeUnicodeString(&TargetNTPath);
 			return TRUE;
 		}
-        cmd_free(Data);
 		CloseHandle(hJunction);
 	}
 	RemoveDirectory(LinkName);
@@ -120,13 +118,14 @@ static BOOL CreateJunction(LPCTSTR LinkName, LPCTSTR TargetName)
 INT
 cmd_mklink(LPTSTR param)
 {
-	//HMODULE hKernel32 = GetModuleHandle(_T("KERNEL32"));
+	HMODULE hKernel32 = GetModuleHandle(_T("KERNEL32"));
 	DWORD Flags = 0;
 	enum { SYMBOLIC, HARD, JUNCTION } LinkType = SYMBOLIC;
 	INT NumFiles = 0;
 	LPTSTR Name[2];
 	INT argc, i;
 	LPTSTR *arg;
+
 	if (!_tcsncmp(param, _T("/?"), 2))
 	{
 		ConOutResPuts(STRING_MKLINK_HELP);
@@ -162,12 +161,11 @@ cmd_mklink(LPTSTR param)
 			Name[NumFiles++] = arg[i];
 		}
 	}
-
+	freep(arg);
 
 	if (NumFiles != 2)
 	{
 		error_req_param_missing();
-        freep(arg);
 		return 1;
 	}
 
@@ -177,16 +175,15 @@ cmd_mklink(LPTSTR param)
 	{
 		/* CreateSymbolicLink doesn't exist in old versions of Windows,
 		 * so load dynamically */
-//		BOOL (WINAPI *CreateSymbolicLink)(LPCTSTR, LPCTSTR, DWORD)
-//#ifdef UNICODE
-//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkW");
-//#else
-//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
-//#endif
-		if (/*CreateSymbolicLink &&*/ CreateSymbolicLink(Name[0], Name[1], Flags))
+		BOOL (WINAPI *CreateSymbolicLink)(LPCTSTR, LPCTSTR, DWORD)
+#ifdef UNICODE
+			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkW");
+#else
+			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, DWORD))GetProcAddress(hKernel32, "CreateSymbolicLinkA");
+#endif
+		if (CreateSymbolicLink && CreateSymbolicLink(Name[0], Name[1], Flags))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_SYMBOLIC, Name[0], Name[1]);
-            freep(arg);
 			return 0;
 		}
 	}
@@ -194,16 +191,15 @@ cmd_mklink(LPTSTR param)
 	{
 		/* CreateHardLink doesn't exist in old versions of Windows,
 		 * so load dynamically */
-//		BOOL (WINAPI *CreateHardLink)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES)
-//#ifdef UNICODE
-//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkW");
-//#else
-//			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkA");
-//#endif
-		if (/*CreateHardLink &&*/ CreateHardLink(Name[0], Name[1], NULL))
+		BOOL (WINAPI *CreateHardLink)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES)
+#ifdef UNICODE
+			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkW");
+#else
+			= (BOOL (WINAPI *)(LPCTSTR, LPCTSTR, LPSECURITY_ATTRIBUTES))GetProcAddress(hKernel32, "CreateHardLinkA");
+#endif
+		if (CreateHardLink && CreateHardLink(Name[0], Name[1], NULL))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_HARD, Name[0], Name[1]);
-            freep(arg);
 			return 0;
 		}
 	}
@@ -212,13 +208,11 @@ cmd_mklink(LPTSTR param)
 		if (CreateJunction(Name[0], Name[1]))
 		{
 			ConOutResPrintf(STRING_MKLINK_CREATED_JUNCTION, Name[0], Name[1]);
-            freep(arg);
 			return 0;
 		}
 	}
 
 	ErrorMessage(GetLastError(), _T("MKLINK"));
-    freep(arg);
 	return 1;
 }
 

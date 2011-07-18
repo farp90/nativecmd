@@ -30,25 +30,21 @@ VOID ShortVersion (VOID)
 	unsigned RosVersionLen;
 	LPTSTR RosVersion;
 
+	ConOutResPrintf(STRING_CMD_SHELLINFO, _T(KERNEL_RELEASE_STR), _T(KERNEL_VERSION_BUILD_STR));
 	VersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
 	memset(VersionInfo.szCSDVersion, 0, sizeof(VersionInfo.szCSDVersion));
 	if (GetVersionEx(&VersionInfo))
 	{
-		//RosVersion = VersionInfo.szCSDVersion + _tcslen(VersionInfo.szCSDVersion) + 1;
-		//RosVersionLen = sizeof(VersionInfo.szCSDVersion) / sizeof(VersionInfo.szCSDVersion[0]) -
-	    //                    (RosVersion - VersionInfo.szCSDVersion);
-		//if (7 <= RosVersionLen && 0 == _tcsnicmp(RosVersion, _T("ReactOS"), 7))
-		//{
-        ConOutResPrintf(STRING_WINDOWS_VERSION,
-                osvi.dwMajorVersion,
-                osvi.dwMinorVersion,
-                osvi.dwBuildNumber,
-                osvi.dwPlatformId);
-		//}
+		RosVersion = VersionInfo.szCSDVersion + _tcslen(VersionInfo.szCSDVersion) + 1;
+		RosVersionLen = sizeof(VersionInfo.szCSDVersion) / sizeof(VersionInfo.szCSDVersion[0]) -
+	                        (RosVersion - VersionInfo.szCSDVersion);
+		if (7 <= RosVersionLen && 0 == _tcsnicmp(RosVersion, _T("ReactOS"), 7))
+		{
+			ConOutResPrintf(STRING_VERSION_RUNVER, RosVersion);
+		}
 	}
-	ConOutResPrintf(STRING_CMD_SHELLINFO, _T(KERNEL_RELEASE_STR), _T(KERNEL_VERSION_BUILD_STR));
-//	ConOutPuts (_T("\n"));
+	ConOutPuts (_T("\n"));
 }
 
 
@@ -72,13 +68,13 @@ INT cmd_ver (LPTSTR param)
 	}
 
 	ShortVersion();
-#if 0
+
 	/* Basic copyright notice */
 	if (param[0] != _T('\0'))
 	{
 
 		ConOutPuts (_T("Copyright (C) 1994-1998 Tim Norman and others."));
-		ConOutPuts (_T("Copyright (C) 1998-") _T(COPYRIGHT_YEAR) _T(" ReactOS Team"));
+		ConOutPuts (_T("Copyright (C) 1998-") _T(COPYRIGHT_YEAR) _T(" ReactOS Team")); 
 
 		for (i = 0; param[i]; i++)
 		{
@@ -123,7 +119,6 @@ INT cmd_ver (LPTSTR param)
 		}
 		ConOutResPuts(STRING_VERSION_HELP5);
 	}
-#endif
 	return 0;
 }
 

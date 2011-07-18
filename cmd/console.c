@@ -29,56 +29,56 @@ UINT OutputCodePage;
 
 VOID ConInDisable (VOID)
 {
-//	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
-//	DWORD dwMode;
-//
-//	GetConsoleMode (hInput, &dwMode);
-//	dwMode &= ~ENABLE_PROCESSED_INPUT;
-//	SetConsoleMode (hInput, dwMode);
+	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
+	DWORD dwMode;
+
+	GetConsoleMode (hInput, &dwMode);
+	dwMode &= ~ENABLE_PROCESSED_INPUT;
+	SetConsoleMode (hInput, dwMode);
 }
 
 
 VOID ConInEnable (VOID)
 {
-//	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
-//	DWORD dwMode;
-//
-//	GetConsoleMode (hInput, &dwMode);
-//	dwMode |= ENABLE_PROCESSED_INPUT;
-//	SetConsoleMode (hInput, dwMode);
+	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
+	DWORD dwMode;
+
+	GetConsoleMode (hInput, &dwMode);
+	dwMode |= ENABLE_PROCESSED_INPUT;
+	SetConsoleMode (hInput, dwMode);
 }
 
 
 VOID ConInFlush (VOID)
 {
-//	FlushConsoleInputBuffer (GetStdHandle (STD_INPUT_HANDLE));
+	FlushConsoleInputBuffer (GetStdHandle (STD_INPUT_HANDLE));
 }
 
 
 VOID ConInKey (PINPUT_RECORD lpBuffer)
 {
-//	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
-//	DWORD  dwRead;
-//
-//	if (hInput == INVALID_HANDLE_VALUE)
-//		WARN ("Invalid input handle!!!\n");
-//
-//	do
-//	{
-//		ReadConsoleInput (hInput, lpBuffer, 1, &dwRead);
-//		if ((lpBuffer->EventType == KEY_EVENT) &&
-//			(lpBuffer->Event.KeyEvent.bKeyDown == TRUE))
-//			break;
-//	}
-//	while (TRUE);
+	HANDLE hInput = GetStdHandle (STD_INPUT_HANDLE);
+	DWORD  dwRead;
+
+	if (hInput == INVALID_HANDLE_VALUE)
+		WARN ("Invalid input handle!!!\n");
+
+	do
+	{
+		ReadConsoleInput (hInput, lpBuffer, 1, &dwRead);
+		if ((lpBuffer->EventType == KEY_EVENT) &&
+			(lpBuffer->Event.KeyEvent.bKeyDown == TRUE))
+			break;
+	}
+	while (TRUE);
 }
 
-PCHAR GetLine(VOID);
+
 VOID ConInString (LPTSTR lpInput, DWORD dwLength)
 {
-//	DWORD dwOldMode;
+	DWORD dwOldMode;
 	DWORD dwRead = 0;
-//	HANDLE hFile;
+	HANDLE hFile;
 
 	LPTSTR p;
 	PCHAR pBuf;
@@ -89,14 +89,12 @@ VOID ConInString (LPTSTR lpInput, DWORD dwLength)
 	pBuf = lpInput;
 #endif
 	ZeroMemory (lpInput, dwLength * sizeof(TCHAR));
-//	hFile = GetStdHandle (STD_INPUT_HANDLE);
-//	GetConsoleMode (hFile, &dwOldMode);
+	hFile = GetStdHandle (STD_INPUT_HANDLE);
+	GetConsoleMode (hFile, &dwOldMode);
 
-//	SetConsoleMode (hFile, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT);
+	SetConsoleMode (hFile, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT);
 
-    p = GetLine();
-    strncpy(pBuf, p, dwLength -1);
-//	ReadFile (hFile, (PVOID)pBuf, dwLength - 1, &dwRead, NULL);
+	ReadFile (hFile, (PVOID)pBuf, dwLength - 1, &dwRead, NULL);
 
 #ifdef _UNICODE
 	MultiByteToWideChar(InputCodePage, 0, pBuf, dwRead, lpInput, dwLength - 1);
@@ -111,7 +109,7 @@ VOID ConInString (LPTSTR lpInput, DWORD dwLength)
 		}
 	}
 
-//	SetConsoleMode (hFile, dwOldMode);
+	SetConsoleMode (hFile, dwOldMode);
 }
 
 static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
@@ -158,7 +156,6 @@ static VOID ConWrite(TCHAR *str, DWORD len, DWORD nStdHandle)
 		cmd_free(buffer);
 #endif
 	}
-
 }
 
 VOID ConOutChar (TCHAR c)
@@ -202,7 +199,7 @@ VOID ConPrintf(LPTSTR szFormat, va_list arg_ptr, DWORD nStdHandle)
 INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHandle)
 {
 	INT len;
-//	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	TCHAR szOut[OUTPUT_BUFFER_SIZE];
 	DWORD dwWritten;
 	HANDLE hOutput = GetStdHandle(nStdHandle);
@@ -211,8 +208,8 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 	static int LineCount = 0;
 
 	/* used to see how big the screen is */
-	int ScreenLines = 21;
-	int ScreenRows = 70;
+	int ScreenLines = 0;
+
 	/* chars since start of line */
 	int CharSL;
 
@@ -226,30 +223,30 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 		return 0;
 
 
-//	//get the size of the visual screen that can be printed too
-//	if (!GetConsoleScreenBufferInfo(hOutput, &csbi))
-//	{
-//		// we assuming its a file handle
-//		ConPrintf(szFormat, arg_ptr, nStdHandle);
-//		return 0;
-//	}
-//	//subtract 2 to account for "press any key..." and for the blank line at the end of PagePrompt()
-//	ScreenLines = (csbi.srWindow.Bottom  - csbi.srWindow.Top) - 4;
-//	CharSL = csbi.dwCursorPosition.X;
-//
-//	//make sure they didnt make the screen to small
-//	if(ScreenLines<4)
-//	{
-//		ConPrintf(szFormat, arg_ptr, nStdHandle);
-//		return 0;
-//	}
+	//get the size of the visual screen that can be printed too
+	if (!GetConsoleScreenBufferInfo(hOutput, &csbi))
+	{
+		// we assuming its a file handle
+		ConPrintf(szFormat, arg_ptr, nStdHandle);
+		return 0;
+	}
+	//subtract 2 to account for "press any key..." and for the blank line at the end of PagePrompt()
+	ScreenLines = (csbi.srWindow.Bottom  - csbi.srWindow.Top) - 4;
+	CharSL = csbi.dwCursorPosition.X;
+
+	//make sure they didnt make the screen to small
+	if(ScreenLines<4)
+	{
+		ConPrintf(szFormat, arg_ptr, nStdHandle);
+		return 0;
+	}
 
 	len = _vstprintf (szOut, szFormat, arg_ptr);
 
 	while (i < len)
 	{
 		// Search until the end of a line is reached
-		if (szOut[i++] != _T('\n') && ++CharSL < ScreenRows)
+		if (szOut[i++] != _T('\n') && ++CharSL < csbi.dwSize.X)
 			continue;
 
 		LineCount++;
@@ -257,11 +254,7 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 
 		if(LineCount >= ScreenLines)
 		{
-            if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
-            {
-                ConWrite(szOut, (DWORD)len, nStdHandle);
-	            return 0;
-            }
+			WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
 			from = i;
 
 			if(PagePrompt() != PROMPT_YES)
@@ -273,10 +266,8 @@ INT ConPrintfPaging(BOOL NewPage, LPTSTR szFormat, va_list arg_ptr, DWORD nStdHa
 		}
 	}
 
-	if(!WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL))
-    {
-         ConWrite(szOut, (DWORD)len, nStdHandle);
-    }
+	WriteConsole(hOutput, &szOut[from], i-from, &dwWritten, NULL);
+
 	return 0;
 }
 
@@ -360,7 +351,7 @@ VOID ConOutPrintf (LPTSTR szFormat, ...)
 
 INT ConOutPrintfPaging (BOOL NewPage, LPTSTR szFormat, ...)
 {
-	INT iReturn = 0;
+	INT iReturn;
 	va_list arg_ptr;
 
 	va_start (arg_ptr, szFormat);
@@ -410,70 +401,70 @@ VOID ConErrPrintf (LPTSTR szFormat, ...)
 
 VOID SetCursorXY (SHORT x, SHORT y)
 {
-//	COORD coPos;
-//
-//	coPos.X = x;
-//	coPos.Y = y;
-//	SetConsoleCursorPosition (GetStdHandle (STD_OUTPUT_HANDLE), coPos);
+	COORD coPos;
+
+	coPos.X = x;
+	coPos.Y = y;
+	SetConsoleCursorPosition (GetStdHandle (STD_OUTPUT_HANDLE), coPos);
 }
 
 
 VOID GetCursorXY (PSHORT x, PSHORT y)
 {
-//	CONSOLE_SCREEN_BUFFER_INFO csbi;
-//
-//	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-//
-//	*x = csbi.dwCursorPosition.X;
-//	*y = csbi.dwCursorPosition.Y;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+	*x = csbi.dwCursorPosition.X;
+	*y = csbi.dwCursorPosition.Y;
 }
 
 
 SHORT GetCursorX (VOID)
 {
-//	CONSOLE_SCREEN_BUFFER_INFO csbi;
-//
-//	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-//
-//	return csbi.dwCursorPosition.X;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+	return csbi.dwCursorPosition.X;
 }
 
 
 SHORT GetCursorY (VOID)
 {
-//	CONSOLE_SCREEN_BUFFER_INFO csbi;
-//
-//	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-//
-//	return csbi.dwCursorPosition.Y;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+	return csbi.dwCursorPosition.Y;
 }
 
 
 VOID GetScreenSize (PSHORT maxx, PSHORT maxy)
 {
-//	CONSOLE_SCREEN_BUFFER_INFO csbi;
-//
-//	if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
-//	{
-//		csbi.dwSize.X = 80;
-//		csbi.dwSize.Y = 25;
-//	}
-//
-//	if (maxx)
-//		*maxx = csbi.dwSize.X;
-//	if (maxy)
-//		*maxy = csbi.dwSize.Y;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
+	{
+		csbi.dwSize.X = 80;
+		csbi.dwSize.Y = 25;
+	}
+
+	if (maxx)
+		*maxx = csbi.dwSize.X;
+	if (maxy)
+		*maxy = csbi.dwSize.Y;
 }
 
 
 VOID SetCursorType (BOOL bInsert, BOOL bVisible)
 {
-//	CONSOLE_CURSOR_INFO cci;
-//
-//	cci.dwSize = bInsert ? 10 : 99;
-//	cci.bVisible = bVisible;
-//
-//	SetConsoleCursorInfo (GetStdHandle (STD_OUTPUT_HANDLE), &cci);
+	CONSOLE_CURSOR_INFO cci;
+
+	cci.dwSize = bInsert ? 10 : 99;
+	cci.bVisible = bVisible;
+
+	SetConsoleCursorInfo (GetStdHandle (STD_OUTPUT_HANDLE), &cci);
 }
 
 /* EOF */

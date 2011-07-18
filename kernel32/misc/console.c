@@ -15,14 +15,15 @@
 /* INCLUDES ******************************************************************/
 
 #include <k32.h>
-
+#include "keytrans.h"
 //#define NDEBUG
 #include <debug.h>
 
 extern RTL_CRITICAL_SECTION ConsoleLock;
 extern BOOL ConsoleInitialized;
 extern BOOL WINAPI IsDebuggerPresent(VOID);
-
+HANDLE StdInput  = INVALID_HANDLE_VALUE;
+HANDLE StdOutput = INVALID_HANDLE_VALUE;
 /* GLOBALS *******************************************************************/
 
 PHANDLER_ROUTINE InitialHandler[1];
@@ -35,7 +36,6 @@ UINT OutputCodePage = 936;
 static WCHAR InputExeName[INPUTEXENAME_BUFLEN] = L"";
 
 /* Default Console Control Handler *******************************************/
-#if 0
 BOOL
 WINAPI
 DefaultConsoleCtrlHandler(DWORD Event)
@@ -208,7 +208,7 @@ IntCaptureMessageString(PCSR_CAPTURE_BUFFER CaptureBuffer,
         Size = MultiByteToWideChar(CP_ACP, 0, String, Size, RequestString->Buffer, Size * sizeof(WCHAR))
                * sizeof(WCHAR);
     }
-    RequestString->Length = RequestString->MaximumLength = Size;
+    RequestString->Length = RequestString->MaximumLength = (USHORT)Size;
 }
 
 /* FUNCTIONS *****************************************************************/
@@ -325,7 +325,7 @@ ConsoleMenuControl(HANDLE hConsole,
     return FALSE;
 }
 
-#endif
+
 /*
  * @implemented
  */
@@ -368,7 +368,7 @@ DuplicateConsoleHandle(HANDLE hConsole,
     return hConsole;
 }
 
-#if 0
+
 static BOOL
 IntExpungeConsoleCommandHistory(LPCVOID lpExeName, BOOL bUnicode)
 {
@@ -1459,7 +1459,7 @@ WriteConsoleInputVDMW(DWORD Unknown0,
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return 0;
 }
-#endif
+
 
 /*
  * @implemented (Undocumented)
@@ -1717,6 +1717,13 @@ WriteConsoleW(HANDLE hConsoleOutput,
                            TRUE);
 }
 
+static
+BOOL
+IntReadConsoleInput(HANDLE hConsoleInput,
+                    PINPUT_RECORD lpBuffer,
+                    DWORD nLength,
+                    LPDWORD lpNumberOfEventsRead,
+                    BOOL bUnicode);
 
 static
 BOOL
@@ -1727,6 +1734,48 @@ IntReadConsole(HANDLE hConsoleInput,
                PCONSOLE_READCONSOLE_CONTROL pInputControl,
                BOOL bUnicode)
 {
+    INPUT_RECORD ir;
+    DWORD read =0;
+    CHAR ch;
+    DWORD po = 0;
+    LPSTR lpBuff = lpBuffer;
+    WCHAR buff[2] = L" ";
+    UNICODE_STRING us = {2, 2, buff};
+    DPRINT("IntReadConsole: %d\n", nNumberOfCharsToRead);
+    while (TRUE)
+    {
+        IntReadConsoleInput(hConsoleInput, &ir, 1, &read, bUnicode);
+        if (!ir.Event.KeyEvent.bKeyDown) continue;
+        ch = ir.Event.KeyEvent.uChar.AsciiChar;
+        switch(ch)
+        {
+            case '\b':
+                if (po)
+                {
+                    us.Buffer[0] = ch;
+                    NtDisplayString(&us);
+                    po--;
+                }
+                lpBuff[po] = '\0';
+            case 0:
+            case -1:
+                continue;
+            case '\r':
+                us.Buffer[0] = ch;
+                NtDisplayString(&us);
+                ch = '\n';
+            default:
+                lpBuff[po] = ch;
+                us.Buffer[0] = ch;
+                NtDisplayString(&us);
+                po++;
+                if(nNumberOfCharsToRead == po || ch == '\n')
+                {
+                    *lpNumberOfCharsRead = po;
+                    return TRUE;
+                }
+        }
+    }
 //    CSR_API_MESSAGE Request;
 //    PCSR_CAPTURE_BUFFER CaptureBuffer;
 //    ULONG CsrRequest = MAKE_CSR_API(READ_CONSOLE, CSR_CONSOLE);
@@ -1843,7 +1892,6 @@ ReadConsoleW(HANDLE hConsoleInput,
                           TRUE);
 }
 
-#if 0
 /*--------------------------------------------------------------
  *    AllocConsole
  *
@@ -1853,6 +1901,54 @@ BOOL
 WINAPI
 AllocConsole(VOID)
 {
+    UNICODE_STRING ScreenName = RTL_CONSTANT_STRING(L"\\??\\BlueScreen");
+    UNICODE_STRING KeyboardName = RTL_CONSTANT_STRING(L"\\Device\\KeyboardClass0");
+    OBJECT_ATTRIBUTES ObjectAttributes;
+    IO_STATUS_BLOCK IoStatusBlock;
+    NTSTATUS Status;
+
+    /* Open the screen */
+    InitializeObjectAttributes(
+        &ObjectAttributes,
+        &ScreenName,
+        0,
+        NULL,
+        NULL);
+    Status = NtOpenFile(
+        &StdOutput,
+        FILE_ALL_ACCESS,
+        &ObjectAttributes,
+        &IoStatusBlock,
+        FILE_OPEN,
+        FILE_SYNCHRONOUS_IO_ALERT);
+    DPRINT("StdOutput Setup: %LX\n", Status);
+    //	if (!NT_SUCCESS(Status))
+    //		return FALSE;
+
+    /* Open the keyboard */
+    InitializeObjectAttributes(
+        &ObjectAttributes,
+        &KeyboardName,
+        OBJ_CASE_INSENSITIVE,
+        NULL,
+        NULL);
+    Status = NtCreateFile(&StdInput,
+        SYNCHRONIZE | GENERIC_READ | FILE_READ_ATTRIBUTES,
+        &ObjectAttributes,
+        &IoStatusBlock,
+        NULL,
+        FILE_ATTRIBUTE_NORMAL,
+        0,
+        FILE_OPEN,
+        FILE_DIRECTORY_FILE,
+        NULL,
+        0);
+    DPRINT("StdInput Setup: %LX\n", Status);
+	if (!NT_SUCCESS(Status))
+		return FALSE;
+//    SetStdHandle(STD_INPUT_HANDLE, StdInput);
+	return TRUE;
+#if 0
     CSR_API_MESSAGE Request;
     ULONG CsrRequest;
     NTSTATUS Status;
@@ -1890,6 +1986,7 @@ AllocConsole(VOID)
 
     SetStdHandle(STD_ERROR_HANDLE, hStdError);
     return TRUE;
+#endif
 }
 
 
@@ -1902,6 +1999,15 @@ BOOL
 WINAPI
 FreeConsole(VOID)
 {
+if (StdInput != INVALID_HANDLE_VALUE)
+    NtClose(StdInput);
+
+if (StdOutput != INVALID_HANDLE_VALUE)
+    NtClose(StdOutput);
+
+return TRUE;
+
+#if 0
     // AG: I'm not sure if this is correct (what happens to std handles?)
     // but I just tried to reverse what AllocConsole() does...
 
@@ -1920,6 +2026,7 @@ FreeConsole(VOID)
 
     NtCurrentPeb()->ProcessParameters->ConsoleHandle = NULL;
     return TRUE;
+#endif
 }
 
 
@@ -2193,6 +2300,38 @@ IntReadConsoleInput(HANDLE hConsoleInput,
                     LPDWORD lpNumberOfEventsRead,
                     BOOL bUnicode)
 {
+	LARGE_INTEGER Offset;
+	IO_STATUS_BLOCK IoStatusBlock;
+	KEYBOARD_INPUT_DATA InputData;
+	NTSTATUS Status;
+
+	Offset.QuadPart = 0;
+	Status = NtReadFile(
+		StdInput,
+		NULL,
+		NULL,
+		NULL,
+		&IoStatusBlock,
+		&InputData,
+		sizeof(KEYBOARD_INPUT_DATA),
+		&Offset,
+		0);
+	if (Status == STATUS_PENDING)
+	{
+		Status = NtWaitForSingleObject(StdInput, FALSE, NULL);
+		Status = IoStatusBlock.Status;
+	}
+	if (!NT_SUCCESS(Status))
+		return FALSE;
+
+	lpBuffer->EventType = KEY_EVENT;
+	Status = IntTranslateKey(&InputData, &lpBuffer->Event.KeyEvent);
+	if (!NT_SUCCESS(Status))
+		return FALSE;
+
+	*lpNumberOfEventsRead = 1;
+	return TRUE;
+#if 0
     CSR_API_MESSAGE Request;
     ULONG CsrRequest;
     ULONG Read;
@@ -2260,6 +2399,7 @@ IntReadConsoleInput(HANDLE hConsoleInput,
     }
 
     return (Read > 0);
+#endif
 }
 
 
@@ -3075,6 +3215,7 @@ WINAPI
 GetConsoleMode(HANDLE hConsoleHandle,
                LPDWORD lpMode)
 {
+#if 0
     CSR_API_MESSAGE Request;
     ULONG CsrRequest;
     NTSTATUS Status;
@@ -3089,7 +3230,7 @@ GetConsoleMode(HANDLE hConsoleHandle,
         return FALSE;
     }
     *lpMode = Request.Data.GetConsoleModeRequest.ConsoleMode;
-
+#endif
     return TRUE;
 }
 
@@ -3211,6 +3352,7 @@ WINAPI
 SetConsoleMode(HANDLE hConsoleHandle,
                DWORD dwMode)
 {
+#if 0
     CSR_API_MESSAGE Request;
     ULONG CsrRequest;
     NTSTATUS Status;
@@ -3225,7 +3367,7 @@ SetConsoleMode(HANDLE hConsoleHandle,
         SetLastErrorByStatus ( Status );
         return FALSE;
     }
-
+#endif
     return TRUE;
 }
 
@@ -3266,6 +3408,38 @@ BOOL
 WINAPI
 FlushConsoleInputBuffer(HANDLE hConsoleInput)
 {
+	LARGE_INTEGER Offset, Timeout;
+	IO_STATUS_BLOCK IoStatusBlock;
+	KEYBOARD_INPUT_DATA InputData;
+	NTSTATUS Status;
+
+	do
+	{
+		Offset.QuadPart = 0;
+		Status = NtReadFile(
+			hConsoleInput,
+			NULL,
+			NULL,
+			NULL,
+			&IoStatusBlock,
+			&InputData,
+			sizeof(KEYBOARD_INPUT_DATA),
+			&Offset,
+			0);
+		if (Status == STATUS_PENDING)
+		{
+			Timeout.QuadPart = -100;
+			Status = NtWaitForSingleObject(hConsoleInput, FALSE, &Timeout);
+			if (Status == STATUS_TIMEOUT)
+			{
+				NtCancelIoFile(hConsoleInput, &IoStatusBlock);
+				return TRUE;
+			}
+		}
+	} while (NT_SUCCESS(Status));
+	return FALSE;
+
+#if 0
     CSR_API_MESSAGE Request;
     ULONG CsrRequest;
     NTSTATUS Status;
@@ -3281,6 +3455,7 @@ FlushConsoleInputBuffer(HANDLE hConsoleInput)
     }
 
     return TRUE;
+#endif
 }
 
 
@@ -3614,6 +3789,9 @@ GenerateConsoleCtrlEvent(DWORD dwCtrlEvent,
 static DWORD
 IntGetConsoleTitle(LPVOID lpConsoleTitle, DWORD nSize, BOOL bUnicode)
 {
+    (CHAR)lpConsoleTitle = '\0';
+    return 0;
+#if 0
     CSR_API_MESSAGE Request;
     PCSR_CAPTURE_BUFFER CaptureBuffer;
     ULONG CsrRequest = MAKE_CSR_API(GET_TITLE, CSR_CONSOLE);
@@ -3668,6 +3846,7 @@ IntGetConsoleTitle(LPVOID lpConsoleTitle, DWORD nSize, BOOL bUnicode)
     CsrFreeCaptureBuffer(CaptureBuffer);
 
     return Request.Data.GetTitleRequest.Length / sizeof(WCHAR);
+#endif
 }
 
 /*--------------------------------------------------------------
@@ -3708,6 +3887,7 @@ BOOL
 WINAPI
 SetConsoleTitleW(LPCWSTR lpConsoleTitle)
 {
+#if 0
     CSR_API_MESSAGE Request;
     PCSR_CAPTURE_BUFFER CaptureBuffer;
     ULONG CsrRequest = MAKE_CSR_API(SET_TITLE, CSR_CONSOLE);
@@ -3735,7 +3915,7 @@ SetConsoleTitleW(LPCWSTR lpConsoleTitle)
         SetLastErrorByStatus(Status);
         return FALSE;
     }
-
+#endif
     return TRUE;
 }
 
@@ -3805,7 +3985,7 @@ CreateConsoleScreenBuffer(DWORD dwDesiredAccess,
     }
     return Request.Data.CreateScreenBufferRequest.OutputHandle;
 }
-#endif
+
 
 /*--------------------------------------------------------------
  *    GetConsoleCP
@@ -3913,7 +4093,6 @@ SetConsoleOutputCP(UINT wCodePageID)
     return TRUE;
 }
 
-#if 0
 /*--------------------------------------------------------------
  *     GetConsoleProcessList
  *
@@ -3945,7 +4124,7 @@ GetConsoleProcessList(LPDWORD lpdwProcessList,
     }
 
     CsrRequest = MAKE_CSR_API(GET_PROCESS_LIST, CSR_CONSOLE);
-    Request.Data.GetProcessListRequest.nMaxIds = dwProcessCount;
+    Request.Data.GetProcessListRequest.nMaxIds = (USHORT)dwProcessCount;
     CsrAllocateMessagePointer(CaptureBuffer,
                               dwProcessCount * sizeof(DWORD),
                               (PVOID*)&Request.Data.GetProcessListRequest.ProcessId);
@@ -4171,7 +4350,7 @@ GetConsoleInputExeNameW(DWORD nBufferLength, LPWSTR lpBuffer)
         return lenName + 1;
     }
 
-    if(lenName + 1 > nBufferLength)
+    if((DWORD)lenName + 1 > nBufferLength)
     {
         /* Buffer is not large enough! */
         SetLastError(ERROR_BUFFER_OVERFLOW);
@@ -4219,7 +4398,7 @@ GetConsoleInputExeNameA(DWORD nBufferLength, LPSTR lpBuffer)
     /* Initialize strings for conversion */
     RtlInitUnicodeString(&BufferU, Buffer);
     BufferA.Length = 0;
-    BufferA.MaximumLength = nBufferLength;
+    BufferA.MaximumLength = (USHORT)nBufferLength;
     BufferA.Buffer = lpBuffer;
 
     /* Convert unicode name to ansi, copying as much chars as fit */
@@ -4375,5 +4554,5 @@ GetCurrentConsoleFontEx(IN HANDLE hConsoleOutput,
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
 }
-#endif
+
 /* EOF */

@@ -8,7 +8,10 @@ TARGETPATH=$(ROOTDIR)\lib
 C_DEFINES=$(C_DEFINES) -D_INLINE_NT_CURRENTTEB_H_
 
 TARGETLIBS=$(TARGETLIBS)\
-	$(ROOTDIR)\lib\*\kernel.lib\
+	$(ROOTDIR)\lib\*\kernel.lib
+
+i386_SOURCES=\
+	i386\chkstk.asm
 
 SOURCES= \
 	chdir.c\

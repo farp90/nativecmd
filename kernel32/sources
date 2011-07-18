@@ -4,7 +4,7 @@ RELEASETYPE=CUSTOM
 TARGETPATH=$(ROOTDIR)\build
 TARGETPATHLIB=$(ROOTDIR)\lib
 
-C_DEFINES=$(C_DEFINES) -D_KERNEL32_ -D_INLINE_NT_CURRENTTEB_H_ -D__REACTOS__
+C_DEFINES=$(C_DEFINES) -D_KERNEL32_ -D_ADVAPI32_ -D_USER32_ -D_INLINE_NT_CURRENTTEB_H_ -D__REACTOS__ 
 #UMTYPE=nt
 USE_NTDLL=1
 DLLBASE=0x7C800000
@@ -13,19 +13,22 @@ DLLENTRY=DllMain
 TARGETLIBS=$(SDK_LIB_PATH)\BufferOverflow.lib
 !INCLUDE $(ROOTDIR)\sources.inc
 
-i386_SOURCES=i386\fiber.S.asm \
+i386_SOURCES=\
+	i386\fiber.S.asm \
 	i386\thread.S.asm
 
 SOURCES=\
-#	debug.c\
+	debug.c\
 	except.c\
 	file.c\
+	keytrans.c\
 	lang.c\
 	mem.c\
 	misc.c\
 	nls.c\
 	ntdll.c \
 	process.c\
+	reg.c\
 	string.c\
 	synch.c\
 	thread.c\

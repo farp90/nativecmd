@@ -33,7 +33,7 @@ VOID ErrorMessage (DWORD dwErrorCode, LPTSTR szFormat, ...)
 	if (dwErrorCode == ERROR_SUCCESS)
 		return;
 
-	nErrorLevel = 1;
+  nErrorLevel = 1;
 
 	if (szFormat)
 	{

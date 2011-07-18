@@ -15,7 +15,7 @@ EXPORTS
   ;AddRefActCtx
   ;AddVectoredContinueHandler
   ;AddVectoredExceptionHandler
-  ;AllocConsole
+  AllocConsole
   ;AllocLSCallback=__wine_stub_kernel32_dll_14
   AllocateUserPhysicalPages
   AreFileApisANSI
@@ -221,8 +221,8 @@ EXPORTS
   FileTimeToDosDateTime
   FileTimeToLocalFileTime
   FileTimeToSystemTime
-  ;FillConsoleOutputAttribute
-  ;FillConsoleOutputCharacterA
+  FillConsoleOutputAttribute
+  FillConsoleOutputCharacterA
   ;FillConsoleOutputCharacterW
   ;FindActCtxSectionGuid
   ;FindActCtxSectionStringA
@@ -255,7 +255,7 @@ EXPORTS
   FindResourceW
   FindVolumeClose
   ;FindVolumeMountPointClose
-  ;FlushConsoleInputBuffer
+  FlushConsoleInputBuffer
   FlushFileBuffers
   FlushInstructionCache
   FlushViewOfFile
@@ -271,7 +271,7 @@ EXPORTS
   FreeResource
   FreeUserPhysicalPages
   ;FreeVirtualBuffer
-  ;GenerateConsoleCtrlEvent
+  GenerateConsoleCtrlEvent
   GetACP
   GetAtomNameA
   GetAtomNameW
@@ -327,14 +327,14 @@ EXPORTS
   ;GetConsoleInputWaitHandle
   ;GetConsoleKeyboardLayoutNameA
   ;GetConsoleKeyboardLayoutNameW
-  ;GetConsoleMode
+  GetConsoleMode
   ;GetConsoleNlsMode
   GetConsoleOutputCP
   ;GetConsoleProcessList
-  ;GetConsoleScreenBufferInfo
+  GetConsoleScreenBufferInfo
   ;GetConsoleSelectionInfo
-  ;GetConsoleTitleA
-  ;GetConsoleTitleW
+  GetConsoleTitleA
+  GetConsoleTitleW
   ;GetConsoleWindow
   GetCurrencyFormatA
   GetCurrencyFormatW
@@ -721,15 +721,15 @@ EXPORTS
   RaiseException
   ;ReOpenFile=__wine_stub_kernel32_dll_717
   ReadConsoleA
-  ;ReadConsoleInputA
+  ReadConsoleInputA
   ;ReadConsoleInputExA
   ;ReadConsoleInputExW
-  ;ReadConsoleInputW
-  ;ReadConsoleOutputA
+  ReadConsoleInputW
+  ReadConsoleOutputA
   ;ReadConsoleOutputAttribute
   ;ReadConsoleOutputCharacterA
   ;ReadConsoleOutputCharacterW
-  ;ReadConsoleOutputW
+  ReadConsoleOutputW
   ReadConsoleW
   ReadDirectoryChangesW
   ReadFile
@@ -793,11 +793,11 @@ EXPORTS
   ;SetConsoleActiveScreenBuffer
   SetConsoleCP
   ;SetConsoleCommandHistoryMode
-  ;SetConsoleCtrlHandler
+  SetConsoleCtrlHandler
   ;SetConsoleCursor
-  ;SetConsoleCursorInfo
+  SetConsoleCursorInfo
   ;SetConsoleCursorMode
-  ;SetConsoleCursorPosition
+  SetConsoleCursorPosition
   ;SetConsoleDisplayMode
   ;SetConsoleFont
   ;SetConsoleHardwareState
@@ -809,7 +809,7 @@ EXPORTS
   ;SetConsoleLocalEUDC
   ;SetConsoleMaximumWindowSize
   ;SetConsoleMenuClose
-  ;SetConsoleMode
+  SetConsoleMode
   ;SetConsoleNlsMode
   ;SetConsoleNumberOfCommandsA
   ;SetConsoleNumberOfCommandsW
@@ -818,8 +818,8 @@ EXPORTS
   ;SetConsolePalette
   ;SetConsoleScreenBufferSize
   ;SetConsoleTextAttribute
-  ;SetConsoleTitleA
-  ;SetConsoleTitleW
+  SetConsoleTitleA
+  SetConsoleTitleW
   ;SetConsoleWindowInfo
   ;SetCriticalSectionSpinCount
   SetCurrentDirectoryA
@@ -967,15 +967,15 @@ EXPORTS
   ;Wow64EnableWow64FsRedirection
   ;Wow64RevertWow64FsRedirection
   WriteConsoleA
-  ;WriteConsoleInputA
+  WriteConsoleInputA
   ;WriteConsoleInputVDMA
   ;WriteConsoleInputVDMW
-  ;WriteConsoleInputW
-  ;WriteConsoleOutputA
+  WriteConsoleInputW
+  WriteConsoleOutputA
   ;WriteConsoleOutputAttribute
   ;WriteConsoleOutputCharacterA
   ;WriteConsoleOutputCharacterW
-  ;WriteConsoleOutputW
+  WriteConsoleOutputW
   WriteConsoleW
   WriteFile
   WriteFileEx
@@ -1036,5 +1036,79 @@ EXPORTS
   _purecall
   LoadStringA
   LoadStringW
+  MessageBeep
 ;  CreateNativeProcessA
 ;  CreateNativeProcessW
+
+  RegCloseKey 
+  RegConnectRegistryA 
+  RegConnectRegistryW 
+  RegCopyTreeA 
+  RegCopyTreeW 
+  RegCreateKeyA 
+  RegCreateKeyExA 
+  RegCreateKeyExW 
+  RegCreateKeyW 
+  RegDeleteKeyA 
+  RegDeleteKeyExA 
+  RegDeleteKeyExW 
+  RegDeleteKeyW 
+  RegDeleteKeyValueA 
+  RegDeleteKeyValueW 
+  RegDeleteTreeA 
+  RegDeleteTreeW 
+  RegDeleteValueA 
+  RegDeleteValueW 
+  RegDisablePredefinedCache 
+  RegDisablePredefinedCacheEx 
+  RegDisableReflectionKey 
+  RegEnableReflectionKey 
+  RegEnumKeyA 
+  RegEnumKeyExA 
+  RegEnumKeyExW 
+  RegEnumKeyW 
+  RegEnumValueA 
+  RegEnumValueW 
+  RegFlushKey 
+  RegGetKeySecurity 
+  RegGetValueA 
+  RegGetValueW 
+  RegLoadKeyA 
+  RegLoadKeyW 
+  RegLoadMUIStringA 
+  RegLoadMUIStringW 
+  RegNotifyChangeKeyValue 
+  RegOpenCurrentUser 
+  RegOpenKeyA 
+  RegOpenKeyExA 
+  RegOpenKeyExW 
+  RegOpenKeyW 
+  RegOpenUserClassesRoot 
+  RegOverridePredefKey 
+  RegQueryInfoKeyA 
+  RegQueryInfoKeyW 
+  RegQueryMultipleValuesA 
+  RegQueryMultipleValuesW 
+  RegQueryReflectionKey 
+  RegQueryValueA 
+  RegQueryValueExA 
+  RegQueryValueExW 
+  RegQueryValueW 
+  ;RegRemapPreDefKey
+  RegReplaceKeyA 
+  RegReplaceKeyW 
+  RegRestoreKeyA 
+  RegRestoreKeyW 
+  RegSaveKeyA 
+  RegSaveKeyExA 
+  RegSaveKeyExW 
+  RegSaveKeyW 
+  RegSetKeySecurity 
+  RegSetKeyValueA 
+  RegSetKeyValueW 
+  RegSetValueA 
+  RegSetValueExA 
+  RegSetValueExW 
+  RegSetValueW 
+  RegUnLoadKeyA 
+  RegUnLoadKeyW 

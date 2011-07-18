@@ -238,7 +238,7 @@ DeleteFiles(LPTSTR FileName, DWORD* dwFlags, DWORD dwAttrFlags)
 						continue;
 
 
-					TRACE("Full filename: %s\n", szFullPath);
+					TRACE("Full filename: %s\n", debugstr_aw(szFullPath));
 
 					/* ask for deleting */
 					if (*dwFlags & DEL_PROMPT)
@@ -275,7 +275,7 @@ DeleteFiles(LPTSTR FileName, DWORD* dwFlags, DWORD dwAttrFlags)
                 }
                 while (FindNextFile (hFile, &f));
 				FindClose (hFile);
-        }
+        } 
 		else error_sfile_not_found(szFullPath);
         return dwFiles;
 }

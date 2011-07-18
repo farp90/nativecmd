@@ -36,7 +36,7 @@
 /* FOR is a special command, so this function is only used for showing help now */
 INT cmd_for (LPTSTR param)
 {
-	TRACE ("cmd_for (\'%s\')\n", param);
+	TRACE ("cmd_for (\'%s\')\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{

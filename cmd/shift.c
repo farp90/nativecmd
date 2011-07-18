@@ -39,7 +39,7 @@
 INT cmd_shift (LPTSTR param)
 {
 	INT i = 0;
-	TRACE ("cmd_shift: (\'%s\')\n", param);
+	TRACE ("cmd_shift: (\'%s\')\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{

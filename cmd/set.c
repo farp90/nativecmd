@@ -217,7 +217,7 @@ ident_len ( LPCTSTR p )
 
 #define PARSE_IDENT(ident,identlen,p) \
 	identlen = ident_len(p); \
-	ident = (LPTSTR)cmd_alloc ( ( identlen + 1 ) * sizeof(TCHAR) ); \
+	ident = (LPTSTR)alloca ( ( identlen + 1 ) * sizeof(TCHAR) ); \
 	memmove ( ident, p, identlen * sizeof(TCHAR) ); \
 	ident[identlen] = 0; \
 	p += identlen;
@@ -302,11 +302,7 @@ seta_unaryTerm ( LPCTSTR* p_, INT* result )
 		INT identlen;
 		PARSE_IDENT(ident,identlen,p);
 		if ( !seta_identval ( ident, result ) )
-        {
-            cmd_free(ident);
 			return FALSE;
-        }
-        cmd_free(ident);
 	}
 	else
 	{
@@ -467,10 +463,7 @@ seta_assignment ( LPCTSTR* p_, INT* result )
 		LPTSTR buf;
 
 		if ( !seta_assignment ( &p, &exprval ) )
-		{
-            cmd_free(ident);
-            return FALSE;
-        }
+			return FALSE;
 
 		if ( !seta_identval ( ident, &identval ) )
 			identval = 0;
@@ -487,31 +480,23 @@ seta_assignment ( LPCTSTR* p_, INT* result )
 			break;
 		default:
 			if ( !calc ( &identval, op, exprval ) )
-            {
-                cmd_free(ident);
 				return FALSE;
-            }
 		}
-		buf = (LPTSTR)cmd_alloc ( 32 * sizeof(TCHAR) );
+		buf = (LPTSTR)alloca ( 32 * sizeof(TCHAR) );
 		_sntprintf ( buf, 32, _T("%i"), identval );
 		SetEnvironmentVariable ( ident, buf ); // TODO FIXME - check return value
 		exprval = identval;
-        cmd_free(buf);
 	}
 	else
 	{
 		/* restore p in case we found an ident but not an op */
 		p = *p_;
 		if ( !seta_expr ( &p, &exprval ) )
-        {
-            cmd_free(ident);
 			return FALSE;
-        }
 	}
 
 	*result = exprval;
 	*p_ = p;
-    cmd_free(ident);
 	return TRUE;
 }
 

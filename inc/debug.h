@@ -15,7 +15,7 @@
 
 #ifndef __INTERNAL_DEBUG
 #define __INTERNAL_DEBUG
-
+#define debugstr_aw(x) x
 /* Define DbgPrint/DbgPrintEx/RtlAssert unless the NDK is used */
 #if !defined(_RTLFUNCS_H) && !defined(_NTDDK_)
 
@@ -77,10 +77,18 @@ RtlAssert(
 #endif
 #endif
 
+#ifdef _WIN32_BUILD
+#undef ASSERT
+#define ASSERT(x)
+#endif
 /* Print stuff only on Debug Builds*/
 #define DPFLTR_DEFAULT_ID -1
-#if DBG
-
+#if DBG && !defined(_WIN32_BUILD)
+    #define BREAK_POINT \
+__asm\
+{\
+    int 3\
+}
     /* These are always printed */
     #define DPRINT1(fmt, ...) DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
@@ -107,7 +115,7 @@ RtlAssert(
     #define TRACE__(ch, fmt, ...)  DbgPrintEx(ch, DPFLTR_TRACE_LEVEL, "(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
     #define INFO__(ch, fmt, ...)   DbgPrintEx(ch, DPFLTR_INFO_LEVEL, "(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 #else /* not DBG */
-
+    #define BREAK_POINT
     /* On non-debug builds, we never show these */
     #define DPRINT1(...) //do { if(0) { DbgPrint(__VA_ARGS__); } } while(0)
     #define DPRINT(...) //do { if(0) { DbgPrint(__VA_ARGS__); } } while(0)

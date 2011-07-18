@@ -296,4 +296,12 @@ _RtlAllocateActivationContextStack(IN PVOID *Context)
 
     return STATUS_SUCCESS;
 }
+
+
 #endif
+BOOL
+WINAPI
+MessageBeep(UINT uType)
+{
+    return 0;
+}

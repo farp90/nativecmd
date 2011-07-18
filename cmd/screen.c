@@ -39,7 +39,7 @@ INT CommandScreen (LPTSTR param)
 		return 1;
 	}
 
-	y = (SHORT)_ttoi(param);
+	y = _ttoi(param);
 	if (y<0 || y>(maxy-1))
 	{
 		ConOutResPuts(STRING_SCREEN_ROW);
@@ -63,7 +63,7 @@ INT CommandScreen (LPTSTR param)
 		return 1;
 	}
 
-	x = (SHORT)_ttoi(param);
+	x = _ttoi(param);
 	if (x<0 || x>(maxx-1))
 	{
 		ConErrResPuts(STRING_SCREEN_COL);

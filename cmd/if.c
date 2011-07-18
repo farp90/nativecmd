@@ -32,7 +32,7 @@
 
 #include <precomp.h>
 
-static INT GenericCmp(INT (__cdecl *StringCmp)(const char *, const char *),
+static INT GenericCmp(INT (__cdecl *StringCmp)(LPCTSTR, LPCTSTR),
                       LPCTSTR Left, LPCTSTR Right)
 {
 	TCHAR *end;
@@ -51,7 +51,7 @@ static INT GenericCmp(INT (__cdecl *StringCmp)(const char *, const char *),
 
 INT cmd_if (LPTSTR param)
 {
-	TRACE ("cmd_if: (\'%s\')\n", param);
+	TRACE ("cmd_if: (\'%s\')\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
@@ -135,7 +135,7 @@ INT ExecuteIf(PARSED_COMMAND *Cmd)
 	else
 	{
 		/* Do case-insensitive string comparisons if /I specified */
-		INT (__cdecl *StringCmp)(const char *, const char *) =
+		INT (__cdecl *StringCmp)(LPCTSTR, LPCTSTR) =
 			(Cmd->If.Flags & IFFLAG_IGNORECASE) ? _tcsicmp : _tcscmp;
 
 		if (Cmd->If.Operator == IF_STRINGEQ)

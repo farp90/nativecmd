@@ -45,7 +45,7 @@ partstrlwr (LPTSTR str)
 	LPTSTR c = str;
 	while (*c && !_istspace (*c) && *c != _T('='))
 	{
-		*c = (CHAR)_totlower (*c);
+		*c = _totlower (*c);
 		c++;
 	}
 }
@@ -110,7 +110,7 @@ VOID ExpandAlias (LPTSTR cmd, INT maxlen)
 		cmd_free(tmp);
 		return;
 	}
-
+	
 	if (GetConsoleAlias(tmp, buffer, maxlen, _T("cmd.exe")) == 0)
 	{
 		cmd_free(tmp);

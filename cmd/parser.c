@@ -112,7 +112,7 @@ static int ParseToken(TCHAR ExtraEnd, TCHAR *Separators)
 					break;
 				}
 			}
-
+		
 			/* Check for numbered redirection */
 			if ((Char >= _T('0') && Char <= _T('9') &&
 			       (ParsePos == &ParseLine[1] || IsSeparator(ParsePos[-2]))
@@ -411,7 +411,7 @@ condition_done:
 	return Cmd;
 }
 
-/* Parse a FOR command.
+/* Parse a FOR command. 
  * Syntax is: FOR [options] %var IN (list) DO command */
 static PARSED_COMMAND *ParseFor(void)
 {

@@ -61,7 +61,7 @@ PerformRedirection(REDIRECTION *RedirList)
 
 	/* Some parameters used for read, write, and append, respectively */
 	static const DWORD dwAccess[] = {
-		GENERIC_READ,
+		GENERIC_READ, 
 		GENERIC_WRITE,
 		GENERIC_WRITE
 	};
@@ -125,7 +125,7 @@ redir_error:
 		Redir->OldHandle = GetHandle(Redir->Number);
 		SetHandle(Redir->Number, hNew);
 
-		TRACE("%d redirected to: %s\n", Redir->Number, Filename);
+		TRACE("%d redirected to: %s\n", Redir->Number, debugstr_aw(Filename));
 		cmd_free(Filename);
 	}
 	return TRUE;

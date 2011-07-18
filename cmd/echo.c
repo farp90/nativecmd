@@ -66,7 +66,7 @@ INT CommandEcho (LPTSTR param)
 {
 	LPTSTR p1;
 
-	TRACE ("CommandEcho: '%s'\n", param);
+	TRACE ("CommandEcho: '%s'\n", debugstr_aw(param));
 
                 /* skip all spaces for the check of '/?', 'ON' and 'OFF' */
                 p1 = param;
@@ -89,7 +89,7 @@ INT CommandEcho (LPTSTR param)
 
 INT CommandEchos (LPTSTR param)
 {
-	TRACE ("CommandEchos: '%s'\n", param);
+	TRACE ("CommandEchos: '%s'\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
@@ -104,7 +104,7 @@ INT CommandEchos (LPTSTR param)
 
 INT CommandEchoerr (LPTSTR param)
 {
-	TRACE ("CommandEchoerr: '%s'\n", param);
+	TRACE ("CommandEchoerr: '%s'\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
@@ -119,7 +119,7 @@ INT CommandEchoerr (LPTSTR param)
 
 INT CommandEchoserr (LPTSTR param)
 {
-	TRACE ("CommandEchoserr: '%s'\n", param);
+	TRACE ("CommandEchoserr: '%s'\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{

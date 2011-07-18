@@ -25,7 +25,7 @@ INT CommandMemory (LPTSTR param)
 	TCHAR szAvailPageFile[40];
 	TCHAR szTotalVirtual[40];
 	TCHAR szAvailVirtual[40];
-//	BOOL (WINAPI *GlobalMemoryStatusEx)(LPMEMORYSTATUSEX);
+	BOOL (WINAPI *GlobalMemoryStatusEx)(LPMEMORYSTATUSEX);
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
@@ -33,26 +33,26 @@ INT CommandMemory (LPTSTR param)
 		return 0;
 	}
 
-//	GlobalMemoryStatusEx
-//		= (BOOL (WINAPI *)(LPMEMORYSTATUSEX))GetProcAddress(GetModuleHandle(_T("KERNEL32")), "GlobalMemoryStatusEx");
-//	if (GlobalMemoryStatusEx)
-//	{
+	GlobalMemoryStatusEx
+		= (BOOL (WINAPI *)(LPMEMORYSTATUSEX))GetProcAddress(GetModuleHandle(_T("KERNEL32")), "GlobalMemoryStatusEx");
+	if (GlobalMemoryStatusEx)
+	{
 		msex.dwLength = sizeof(MEMORYSTATUSEX);
 		GlobalMemoryStatusEx(&msex);
-//	}
-//	else
-//	{
-//		MEMORYSTATUS ms;
-//		ms.dwLength = sizeof(MEMORYSTATUS);
-//		GlobalMemoryStatus(&ms);
-//		msex.dwMemoryLoad = ms.dwMemoryLoad;
-//		msex.ullTotalPhys = ms.dwTotalPhys;
-//		msex.ullAvailPhys = ms.dwAvailPhys;
-//		msex.ullTotalPageFile = ms.dwTotalPageFile;
-//		msex.ullAvailPageFile = ms.dwAvailPageFile;
-//		msex.ullTotalVirtual = ms.dwTotalVirtual;
-//		msex.ullAvailVirtual = ms.dwAvailVirtual;
-//	}
+	}
+	else
+	{
+		MEMORYSTATUS ms;
+		ms.dwLength = sizeof(MEMORYSTATUS);
+		GlobalMemoryStatus(&ms);
+		msex.dwMemoryLoad = ms.dwMemoryLoad;
+		msex.ullTotalPhys = ms.dwTotalPhys;
+		msex.ullAvailPhys = ms.dwAvailPhys;
+		msex.ullTotalPageFile = ms.dwTotalPageFile;
+		msex.ullAvailPageFile = ms.dwAvailPageFile;
+		msex.ullTotalVirtual = ms.dwTotalVirtual;
+		msex.ullAvailVirtual = ms.dwAvailVirtual;
+	}
 
 	ConvertULargeInteger(msex.dwMemoryLoad, szMemoryLoad, 20, FALSE);
 	ConvertULargeInteger(msex.ullTotalPhys, szTotalPhys, 40, TRUE);

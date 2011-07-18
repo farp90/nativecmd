@@ -217,7 +217,7 @@ INT Batch (LPTSTR fullname, LPTSTR firstword, LPTSTR param, PARSED_COMMAND *Cmd)
 				 FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 
 	TRACE ("Batch: (\'%s\', \'%s\', \'%s\')  hFile = %x\n",
-		fullname, firstword, param, hFile);
+		debugstr_aw(fullname), debugstr_aw(firstword), debugstr_aw(param), hFile);
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
@@ -273,7 +273,7 @@ INT Batch (LPTSTR fullname, LPTSTR firstword, LPTSTR param, PARSED_COMMAND *Cmd)
 	bc->bEcho = bEcho; /* Preserve echo across batch calls */
 	for (i = 0; i < 10; i++)
 		bc->shiftlevel[i] = i;
-
+	
 	bc->params = BatchParams (firstword, param);
     //
     // Allocate enough memory to hold the params and copy them over without modifications
@@ -368,7 +368,7 @@ LPTSTR ReadBatchLine ()
 		return NULL;
 	}
 
-	TRACE ("ReadBatchLine(): textline: \'%s\'\n", textline);
+	TRACE ("ReadBatchLine(): textline: \'%s\'\n", debugstr_aw(textline));
 
 	if (textline[_tcslen(textline) - 1] != _T('\n'))
 		_tcscat(textline, _T("\n"));

@@ -1,4 +1,3 @@
-#define _USER32_
 #include <k32.h>
 /*
  * @implemented (Synced with Wine 08.01.2009)

@@ -41,7 +41,7 @@ INT cmd_goto (LPTSTR param)
 	LPTSTR tmp, tmp2;
 	LONG   lNewPosHigh = 0;
 
-	TRACE ("cmd_goto (\'%s\')\n", param);
+	TRACE ("cmd_goto (\'%s\')\n", debugstr_aw(param));
 
 	if (!_tcsncmp (param, _T("/?"), 2))
 	{
@@ -97,7 +97,7 @@ INT cmd_goto (LPTSTR param)
 		tmp = textline;
 		while (_istspace (*tmp))
 			tmp++;
-
+		
 		/* All space after leading space terminate the string */
 		size = _tcslen(tmp) -1;
 		pos=0;

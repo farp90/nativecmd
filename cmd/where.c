@@ -91,7 +91,7 @@ SearchForExecutableSingle (LPCTSTR pFileName, LPTSTR pFullName, LPTSTR pPathExt,
 	*pFullName = _T('\0');
 
 	TRACE ("SearchForExecutableSingle: \'%s\' in dir: \'%s\'\n",
-		pFileName, pDirectory);
+		debugstr_aw(pFileName), debugstr_aw(pDirectory));
 
 	pszPathEnd = szPathBuffer;
 	if (pDirectory != NULL)
@@ -105,7 +105,7 @@ SearchForExecutableSingle (LPCTSTR pFileName, LPTSTR pFullName, LPTSTR pPathExt,
 
 	if (IsExistingFile (szPathBuffer))
 	{
-		TRACE ("Found: \'%s\'\n", szPathBuffer);
+		TRACE ("Found: \'%s\'\n", debugstr_aw(szPathBuffer));
 		_tcscpy (pFullName, szPathBuffer);
 		return TRUE;
 	}
@@ -129,7 +129,7 @@ SearchForExecutableSingle (LPCTSTR pFileName, LPTSTR pFullName, LPTSTR pPathExt,
 
 		if (IsExistingFile (szPathBuffer))
 		{
-			TRACE ("Found: \'%s\'\n", szPathBuffer);
+			TRACE ("Found: \'%s\'\n", debugstr_aw(szPathBuffer));
 			_tcscpy (pFullName, szPathBuffer);
 			return TRUE;
 		}
@@ -145,7 +145,7 @@ SearchForExecutable (LPCTSTR pFileName, LPTSTR pFullName)
 	LPTSTR pszPathExt, pszPath;
 	LPTSTR pCh;
 	DWORD  dwBuffer;
-	TRACE ("SearchForExecutable: \'%s\'\n", pFileName);
+	TRACE ("SearchForExecutable: \'%s\'\n", debugstr_aw(pFileName));
 
 	/* load environment varable PATHEXT */
 	pszPathExt = (LPTSTR)cmd_alloc (ENV_BUFFER_SIZE * sizeof(TCHAR));
@@ -188,7 +188,7 @@ SearchForExecutable (LPCTSTR pFileName, LPTSTR pFullName)
 		GetEnvironmentVariable (_T("PATH"), pszPath, dwBuffer);
 	}
 
-	TRACE ("SearchForExecutable(): Loaded PATH: %s\n", pszPath);
+	TRACE ("SearchForExecutable(): Loaded PATH: %s\n", debugstr_aw(pszPath));
 
 	/* search in PATH */
 	pCh = _tcstok(pszPath, _T(";"));
