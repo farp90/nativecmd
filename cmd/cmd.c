@@ -1750,7 +1750,7 @@ Initialize()
 		ConOutResPrintf(STRING_REACTOS_VERSION,
 			_T(KERNEL_RELEASE_STR),
 			_T(KERNEL_VERSION_BUILD_STR));
-		ConOutPuts(_T("(C) Copyright 1998-") _T(COPYRIGHT_YEAR) _T(" ReactOS Team."));
+		ConOutPuts(_T("(C) Copyright 2011-") _T(COPYRIGHT_YEAR) _T(" Native Cmd Team."));
 	}
 
 	if (AutoRun)
