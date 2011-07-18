@@ -2,7 +2,7 @@
 SET MAJOR=0
 SET MINOR=0
 SET PATCH=1
-SET TYPE=M1
+SET TYPE=M2
 
 FOR /F "tokens=1,2,3 delims=-/: " %%i IN ("%date%") DO (
     SET BUILD_DATE=%%i%%j%%k
