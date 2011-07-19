@@ -305,3 +305,38 @@ MessageBeep(UINT uType)
 {
     return 0;
 }
+/*
+ * @implemented
+ */
+DWORD
+WINAPI
+CharUpperBuffA(LPSTR str, DWORD len)
+{
+    DWORD lenW;
+    WCHAR* strW;
+    if (!str) return 0; /* YES */
+
+    lenW = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
+    strW = HeapAlloc(GetProcessHeap(), 0, lenW * sizeof(WCHAR));
+    if (strW) {
+        MultiByteToWideChar(CP_ACP, 0, str, len, strW, lenW);
+        CharUpperBuffW(strW, lenW);
+        len = WideCharToMultiByte(CP_ACP, 0, strW, lenW, str, len, NULL, NULL);
+        HeapFree(GetProcessHeap(), 0, strW);
+        return len;
+    }
+    return 0;
+}
+
+/*
+ * @implemented
+ */
+DWORD
+WINAPI
+CharUpperBuffW(LPWSTR str, DWORD len)
+{
+    DWORD ret = len;
+    if (!str) return 0; /* YES */
+    for (; len; len--, str++) *str = towupper(*str);
+    return ret;
+}

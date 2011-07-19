@@ -1037,6 +1037,8 @@ EXPORTS
   LoadStringA
   LoadStringW
   MessageBeep
+  CharUpperBuffA
+  CharUpperBuffW
 ;  CreateNativeProcessA
 ;  CreateNativeProcessW
 

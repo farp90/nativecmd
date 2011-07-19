@@ -3,7 +3,7 @@ TARGETTYPE=LIBRARY
 RELEASETYPE=CUSTOM
 TARGETPATH=$(ROOTDIR)\lib
 
-!INCLUDE $(ROOTDIR)\sources.inc
+!INCLUDE $(ROOTDIR)\inc\sources.inc
 
 C_DEFINES=$(C_DEFINES) -D_INLINE_NT_CURRENTTEB_H_
 
@@ -19,4 +19,5 @@ SOURCES= \
 	getcwd.c\
 	getdcwd.c\
 	getdrive.c\
-	popen.c
+	popen.c\
+	wsplitp.c

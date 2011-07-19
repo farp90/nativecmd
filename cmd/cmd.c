@@ -1663,7 +1663,14 @@ Initialize()
 	if (0 != GetModuleFileName (NULL, ModuleName, _MAX_PATH + 1))
 	{
 		ModuleName[_MAX_PATH] = _T('\0');
-		SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
+		if (_tcsncmp(_T("\\??\\"), ModuleName, 4))
+		{
+			SetEnvironmentVariable (_T("COMSPEC"), ModuleName);
+		}
+		else
+		{
+			SetEnvironmentVariable (_T("COMSPEC"), &ModuleName[4]);
+		}
 	}
 
 	/* add ctrl break handler */

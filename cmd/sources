@@ -3,9 +3,11 @@ TARGETTYPE=PROGRAM
 RELEASETYPE=CUSTOM
 TARGETPATH=$(ROOTDIR)\build
 
+!INCLUDE $(ROOTDIR)\inc\sources.inc
+
 C_DEFINES=$(C_DEFINES) -D_INLINE_NT_CURRENTTEB_H_
 
-!INCLUDE $(ROOTDIR)\sources.inc
+
 !IF DEFINED(_WIN32_BUILD)
 USE_MSVCRT=1
 TARGETLIBS=$(TARGETLIBS)\
@@ -18,7 +20,8 @@ TARGETLIBS=$(TARGETLIBS)\
 	$(ROOTDIR)\lib\*\kernel.lib\
 !ENDIF
 
-SOURCES=alias.c \
+SOURCES=\
+	alias.c \
 	assoc.c \
 	attrib.c \
 	batch.c \

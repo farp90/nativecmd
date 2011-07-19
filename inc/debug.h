@@ -16,6 +16,7 @@
 #ifndef __INTERNAL_DEBUG
 #define __INTERNAL_DEBUG
 #define debugstr_aw(x) x
+
 /* Define DbgPrint/DbgPrintEx/RtlAssert unless the NDK is used */
 #if !defined(_RTLFUNCS_H) && !defined(_NTDDK_)
 
@@ -103,6 +104,10 @@ __asm\
 
     #endif
 
+    #define WINE_TRACE(fmt, ...) DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+    #define WINE_FIXME(fmt, ...) DbgPrint("(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+
+
     #define UNIMPLEMENTED         DbgPrint("WARNING:  %s at %s:%d is UNIMPLEMENTED!\n",__FUNCTION__,__FILE__,__LINE__);
 
     #define ERR_(ch, fmt, ...)    DbgPrintEx(DPFLTR_##ch##_ID, DPFLTR_ERROR_LEVEL, "(%s:%d) " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
@@ -119,6 +124,9 @@ __asm\
     /* On non-debug builds, we never show these */
     #define DPRINT1(...) //do { if(0) { DbgPrint(__VA_ARGS__); } } while(0)
     #define DPRINT(...) //do { if(0) { DbgPrint(__VA_ARGS__); } } while(0)
+
+    #define WINE_TRACE(fmt, ...)
+    #define WINE_FIXME(fmt, ...)
 
     #define UNIMPLEMENTED
 

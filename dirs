@@ -1,5 +1,9 @@
 DIRS=\
-	cmd
+	cmd\
+	reg\
+#	find\
+	xcopy
+
 OPTIONAL_DIRS=\
 	kernel32\
 	mspack\
