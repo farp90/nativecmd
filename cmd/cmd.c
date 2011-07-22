@@ -319,7 +319,7 @@ Execute (LPTSTR Full, LPTSTR First, LPTSTR Rest, PARSED_COMMAND *Cmd)
 	TCHAR szFullCmdLine [CMDLINE_LENGTH];
 
 	TRACE ("Execute: \'%s\' \'%s\'\n", debugstr_aw(First), debugstr_aw(Rest));
-BREAK_POINT
+//BREAK_POINT
 	/* Though it was already parsed once, we have a different set of rules
 	   for parsing before we pass to CreateProccess */
 	if (First[0] == _T('/') || (First[0] && First[1] == _T(':')))
@@ -1822,7 +1822,7 @@ int cmd_main (int argc, const TCHAR *argv[])
 	HANDLE hConsole;
 	TCHAR startPath[MAX_PATH];
 	CONSOLE_SCREEN_BUFFER_INFO Info;
-BREAK_POINT
+//BREAK_POINT
 	InitializeCriticalSection(&ChildProcessRunningLock);
 	lpOriginalEnvironment = DuplicateEnvironment();
 

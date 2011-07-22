@@ -53,7 +53,7 @@ BaseThreadStartup(LPTHREAD_START_ROUTINE lpStartAddress,
                   LPVOID lpParameter)
 {
     volatile UINT uExitCode = 0;
-
+    //BREAK_POINT
     /* Attempt to call the Thread Start Address */
     _SEH2_TRY
     {

@@ -18,6 +18,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <debug.h>
 #include <wine/unicode.h>
 #include "reg.h"
 WINADVAPI
@@ -365,6 +366,8 @@ int __cdecl main(int argc, char *argv[])
     UINT cp = GetConsoleCP();
     int len = 0;
     int i = 0;
+//    BREAK_POINT
+//    reg_printfW(L"argc=%d\r\n", argc);
     for(i = 0; i < argc; i++)
     {
         len = strlen(argv[i]) + 1;

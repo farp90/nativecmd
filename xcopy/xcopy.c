@@ -90,29 +90,12 @@ static const WCHAR wchr_dotdot[]  = {'.', '.', 0};
 static WCHAR copyFrom[MAX_PATH];
 static WCHAR copyTo[MAX_PATH];
 
-int __cdecl wmain(int argc, WCHAR *argvW[]);
-int __cdecl main(int argc, char *argv[])
-{
-    WCHAR **argvW = HeapAlloc(GetProcessHeap(),0,argc*sizeof(LPWSTR));
-    UINT cp = GetConsoleCP();
-    int len = 0;
-    int i = 0;
-    for(i = 0; i < argc; i++)
-    {
-        len = strlen(argv[i]) + 1;
-        argvW[i] = HeapAlloc(GetProcessHeap(),0,len*sizeof(WCHAR));
-        //RtlZeroMemory(argvW[i], (len + 1)*sizeof(WCHAR));
-        MultiByteToWideChar(cp, 0, argv[i], len, argvW[i], len);
-//    printf("argv[%d]:%S\r\n", i, argvW[i]);
-    }
-    return wmain(argc, argvW);
-}
 /* =========================================================================
    main - Main entrypoint for the xcopy command
 
      Processes the args, and drives the actual copying
    ========================================================================= */
-int __cdecl wmain (int argc, WCHAR *argvW[])
+int __cdecl main (int argc, char *argv[])
 {
     int     rc = 0;
     WCHAR   suppliedsource[MAX_PATH] = {0};   /* As supplied on the cmd line */

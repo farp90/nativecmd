@@ -58,7 +58,7 @@ BaseProcessStartup(PPROCESS_START_ROUTINE lpStartAddress)
     UINT uExitCode = 0;
 
     DPRINT("BaseProcessStartup(..) - setting up exception frame.\n");
-
+//BREAK_POINT
     _SEH2_TRY
     {
         /* Set our Start Address */
@@ -164,7 +164,7 @@ BasepCreateFirstThread(HANDLE ProcessHandle,
     INITIAL_TEB InitialTeb;
     NTSTATUS Status;
     HANDLE hThread;
-
+    PROCESS_BASIC_INFORMATION ProcessBasicInfo;
     DPRINT("BasepCreateFirstThread. hProcess: %lx\n", ProcessHandle);
 
     /* Create the Thread's Stack */
@@ -173,12 +173,17 @@ BasepCreateFirstThread(HANDLE ProcessHandle,
                      SectionImageInfo->CommittedStackSize,
                      &InitialTeb);
 
+    ZwQueryInformationProcess(ProcessHandle,
+                              ProcessBasicInformation,
+                              &ProcessBasicInfo,
+                              sizeof(ProcessBasicInfo),
+                              NULL);
     /* Create the Thread's Context */
     BasepInitializeContext(&Context,
-                           NtCurrentPeb(),
+                           ProcessBasicInfo.PebBaseAddress/*NtCurrentPeb()*/,
                            SectionImageInfo->TransferAddress,
                            InitialTeb.StackBase,
-                           0);
+                           1);
 
     /* Convert the thread attributes */
     ObjectAttributes = BasepConvertObjectAttributes(&LocalObjectAttributes,
